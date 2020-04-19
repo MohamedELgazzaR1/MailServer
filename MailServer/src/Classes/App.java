@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import InterFaces.IApp;
 import InterFaces.IContact;
+import InterFaces.IMail;
 
 public class App implements IApp{
 
@@ -88,5 +89,13 @@ public class App implements IApp{
 		
 		return true;
 	}
+
+	@Override
+	public boolean compose(IMail email) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	
 
 }

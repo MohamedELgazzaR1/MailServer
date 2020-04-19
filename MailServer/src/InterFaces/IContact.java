@@ -51,5 +51,5 @@ public interface IContact {
 	public String getpassword();
 	
 	public String getname();
-	
+
 }

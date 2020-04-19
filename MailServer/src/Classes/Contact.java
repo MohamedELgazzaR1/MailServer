@@ -1,8 +1,10 @@
 package Classes;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 import InterFaces.IContact;
 
@@ -13,9 +15,6 @@ public class Contact implements IContact {
 	String repassword;
 	String name;
 	
-	
-	
-
 	
 	public void setemail(String entered){
 		email=entered;
@@ -100,6 +99,33 @@ public class Contact implements IContact {
 			return false;
 		}
 		return true;
+	}
+
+	public String[] getData(String email) {
+		
+		String[] data = new String[3];
+		int linecounter=0;
+		try {
+			File myobj =new File("D:\\MailServerData\\" + email + "\\contactinfo.txt");
+			Scanner myreader= new Scanner(myobj);
+			while(myreader.hasNextLine()) {
+				String datapoint=myreader.next();
+				if(linecounter<3) {
+					data[linecounter] = datapoint;
+				}
+				else {
+					break;
+				}
+				linecounter++;
+			}
+	
+			myreader.close();
+		} catch (FileNotFoundException e) {
+			
+		}
+		
+		return data;
+		
 	}
 
 	

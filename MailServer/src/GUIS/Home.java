@@ -34,6 +34,7 @@ public class Home extends JFrame {
 	private JPasswordField uprepassword;
 	private JTextField InputEmail;
 	private JPasswordField inputPassword;
+	private static Home frame = new Home();
 
 	/**
 	 * Launch the application.
@@ -42,7 +43,7 @@ public class Home extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Home frame = new Home();
+					
 					//frame.setUndecorated(true);
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -74,28 +75,28 @@ public class Home extends JFrame {
 				// EDIT IS Blank
 				
 				if(App.isBlankString(upusername.getText())) {
-					JOptionPane.showMessageDialog(null,"Please Fill Username Field !","Error !",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,"Please fill Username field!","Error",JOptionPane.ERROR_MESSAGE);
 				}
 				else if(App.isBlankString(upemail.getText())) {
-					JOptionPane.showMessageDialog(null,"Please Fill Email Field !","Error !",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,"Please fill Email field!","Error",JOptionPane.ERROR_MESSAGE);
 				}
 				else if(App.isBlankString(uppassword.getText())) {
-					JOptionPane.showMessageDialog(null,"Please Fill Password Field !","Error !",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,"Please fill Password field!","Error",JOptionPane.ERROR_MESSAGE);
 				}
 				
 				else if(App.isBlankString(uprepassword.getText())) {
-					JOptionPane.showMessageDialog(null,"Please Fill RePassword Field !","Error !",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,"Please fill Re Password field!","Error",JOptionPane.ERROR_MESSAGE);
 				}
 				else if(repass.compareTo(uppassword.getText())!=0) {
 					System.out.println(repass);
 					System.out.println(uppassword.getText());
-					JOptionPane.showMessageDialog(null,"Passwords Don't Match !","Error !",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,"Passwords do not match!","Error",JOptionPane.ERROR_MESSAGE);
 	
 				}
 				else {
 					String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 				    if(!upemail.getText().matches(regex)) {
-				   	  JOptionPane.showMessageDialog(null,"Invalid Email Format !","Error !",JOptionPane.ERROR_MESSAGE);
+				   	  JOptionPane.showMessageDialog(null,"Invalid Email format.","Error",JOptionPane.ERROR_MESSAGE);
 				    } 
 				    else {
 				    	Contact input=new Contact();
@@ -104,10 +105,10 @@ public class Home extends JFrame {
 						input.setemail(upemail.getText());
 						App test=new App();
 						if(test.signup(input)) {
-							JOptionPane.showMessageDialog(null,"Account Created Successfully !");
+							JOptionPane.showMessageDialog(null,"Account created successfully!");
 						}
 						else {
-							JOptionPane.showMessageDialog(null,"Email Already Exist !","Error !",JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null,"Email address already exists.","Error",JOptionPane.ERROR_MESSAGE);
 						}
 				    }
 				}
@@ -175,25 +176,30 @@ public class Home extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 				if(App.isBlankString(InputEmail.getText())) {
-					JOptionPane.showMessageDialog(null,"Please Fill Email Field !","Error !",JOptionPane.ERROR_MESSAGE);
-				}
-				else if(App.isBlankString(inputPassword.getText())) {
-					JOptionPane.showMessageDialog(null,"Please Fill Password Field !","Error !",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,"Please fill Email field!","Error",JOptionPane.ERROR_MESSAGE);
 				}
 				else if(!InputEmail.getText().matches(regex)){
-				   	  JOptionPane.showMessageDialog(null,"Invalid Email Format !","Error !",JOptionPane.ERROR_MESSAGE);
+				   	  JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
 				}
+				else if(App.isBlankString(inputPassword.getText())) {
+					JOptionPane.showMessageDialog(null,"Please fill Password field!","Error",JOptionPane.ERROR_MESSAGE);
+				}
+				
 				else {
 		
 					App test=new App();
 					if(test.signin(InputEmail.getText(), inputPassword.getText())) {
-						JOptionPane.showMessageDialog(null,"Successfully Logged in !");
+						JOptionPane.showMessageDialog(null,"Logged in successfully!");
 						ContactWindow Contact=new ContactWindow();
-						Contact.setVisible(true);
-						
-						
+						//Contact.setVisible(true);
+						Contact user = new Contact();
+						String[] data = user.getData(InputEmail.getText());
+						Contact.main(data);
+						frame.setVisible(false);
+
+		
 					}else {
-						JOptionPane.showMessageDialog(null,"Invaild Email or password","Error !",JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null,"Incorrect email or password.","Error",JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			
