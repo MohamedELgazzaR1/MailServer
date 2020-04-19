@@ -13,28 +13,6 @@ import InterFaces.IContact;
 
 public class App implements IApp{
 
-	
-	private static void appendUsingFileWriter(String filePath, String text) {
-		File file = new File(filePath);
-		FileWriter fr = null;
-		try {
-			// Below constructor argument decides whether to append or override
-			fr = new FileWriter(file, true);
-			fr.write(text);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				fr.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	
-	
 	@Override
 	public boolean signin(String email, String password) {
 
@@ -62,10 +40,16 @@ public class App implements IApp{
 				linecounter++;
 			}
 			myreader.close();
-			if(linecounter==0) {
-				appendUsingFileWriter("D:\\MailServerData\\database.txt",contact.getemail()+"\n"+contact.getpassword());
-			}else {
-			appendUsingFileWriter("D:\\MailServerData\\database.txt","\n"+contact.getemail()+"\n"+contact.getpassword());
+			try {
+				FileWriter wrt = new FileWriter(myobj, true);
+				if(linecounter==0) {
+					wrt.write(contact.getemail()+"\n"+contact.getpassword());
+				}else {
+					wrt.write("\n"+contact.getemail()+"\n"+contact.getpassword());
+				}
+				wrt.close();
+			} catch (IOException e) {
+				return false;
 			}
 			if (!contact.newcontact()) {
 				return false;
