@@ -13,8 +13,36 @@ import InterFaces.IContact;
 
 public class App implements IApp{
 
+	public static boolean isBlankString(String string) {
+	    return string == null || string.trim().isEmpty();
+	}
+	
 	@Override
 	public boolean signin(String email, String password) {
+
+		
+		Scanner myreader;
+		try {
+			int linecounter=0;
+			File myobj =new File("D:\\MailServerData\\database.txt");
+			
+			myreader = new Scanner(myobj);
+			while(myreader.hasNextLine()) {
+				String data=myreader.next();
+				if(linecounter%2==0) {
+					if(email.compareTo(data)==0) {
+						if(password.compareTo(myreader.next())==0) {
+						myreader.close();
+						return true;
+						}
+					}	
+				}
+				linecounter++;
+			}
+			myreader.close();
+		} catch (FileNotFoundException e) {
+			return false;
+		}
 
 		return false;
 	}

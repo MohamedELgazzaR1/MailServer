@@ -73,21 +73,19 @@ public class Home extends JFrame {
 				
 				// EDIT IS Blank
 				
-				if(upusername.getText()==null) {
+				if(App.isBlankString(upusername.getText())) {
 					JOptionPane.showMessageDialog(null,"Please Fill Username Field !","Error !",JOptionPane.ERROR_MESSAGE);
 				}
-				
-				else if(uppassword.getText()==null) {
+				else if(App.isBlankString(upemail.getText())) {
+					JOptionPane.showMessageDialog(null,"Please Fill Email Field !","Error !",JOptionPane.ERROR_MESSAGE);
+				}
+				else if(App.isBlankString(uppassword.getText())) {
 					JOptionPane.showMessageDialog(null,"Please Fill Password Field !","Error !",JOptionPane.ERROR_MESSAGE);
 				}
 				
-				else if(uprepassword.getText()==null) {
+				else if(App.isBlankString(uprepassword.getText())) {
 					JOptionPane.showMessageDialog(null,"Please Fill RePassword Field !","Error !",JOptionPane.ERROR_MESSAGE);
 				}
-				else if(upemail.getText()==null) {
-					JOptionPane.showMessageDialog(null,"Please Fill Email Field !","Error !",JOptionPane.ERROR_MESSAGE);
-				}
-				
 				else if(repass.compareTo(uppassword.getText())!=0) {
 					System.out.println(repass);
 					System.out.println(uppassword.getText());
@@ -175,6 +173,30 @@ public class Home extends JFrame {
 		JButton signin = new JButton("Sign In");
 		signin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+				if(App.isBlankString(InputEmail.getText())) {
+					JOptionPane.showMessageDialog(null,"Please Fill Email Field !","Error !",JOptionPane.ERROR_MESSAGE);
+				}
+				else if(App.isBlankString(inputPassword.getText())) {
+					JOptionPane.showMessageDialog(null,"Please Fill Password Field !","Error !",JOptionPane.ERROR_MESSAGE);
+				}
+				else if(!InputEmail.getText().matches(regex)){
+				   	  JOptionPane.showMessageDialog(null,"Invalid Email Format !","Error !",JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+		
+					App test=new App();
+					if(test.signin(InputEmail.getText(), inputPassword.getText())) {
+						JOptionPane.showMessageDialog(null,"Successfully Logged in !");
+						ContactWindow Contact=new ContactWindow();
+						Contact.setVisible(true);
+						
+						
+					}else {
+						JOptionPane.showMessageDialog(null,"Invaild Email or password","Error !",JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			
 			}
 		});
 		signin.setForeground(Color.WHITE);
