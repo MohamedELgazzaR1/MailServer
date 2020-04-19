@@ -55,6 +55,7 @@ public class App implements IApp{
 				String data=myreader.next();
 				if(linecounter%2==0) {
 					if(contact.getemail().compareTo(data)==0) {
+						myreader.close();
 						return false;
 					}	
 				}
@@ -66,8 +67,9 @@ public class App implements IApp{
 			}else {
 			appendUsingFileWriter("D:\\MailServerData\\database.txt","\n"+contact.getemail()+"\n"+contact.getpassword());
 			}
-		
-			
+			if (!contact.newcontact()) {
+				return false;
+			}
 		} catch (FileNotFoundException e) {
 			return false;
 		}

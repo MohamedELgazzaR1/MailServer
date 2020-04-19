@@ -1,5 +1,9 @@
 package Classes;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import InterFaces.IContact;
 
 public class Contact implements IContact {
@@ -65,9 +69,37 @@ public class Contact implements IContact {
 	}
 
 	@Override
-	public Boolean addcontact() {
-		// TODO Auto-generated method stub
-		return null;
+	public Boolean newcontact(){
+		String[] folders = {"Inbox", "Sent", "Draft", "Trash"};
+		File mailfolder = new File("D:\\MailServerData", this.email);
+		mailfolder.mkdir();
+		for (String folder : folders) {
+			File defFolders = new File(mailfolder, folder);
+			defFolders.mkdir();
+			File mails = new File(defFolders, "mailsfile.txt");
+			try {
+				mails.createNewFile();
+			} catch (IOException e) {
+				return false;
+			}
+		}
+		File contactinfo = new File(mailfolder, "contactinfo.txt");
+		try {
+			contactinfo.createNewFile();
+		} catch (IOException e) {
+			return false;
+		}
+		try {
+			FileWriter wrt = new FileWriter(contactinfo, true);
+			wrt.write(this.name + '\n' + this.email + '\n' + this.password + '\n');
+			for(String w : folders) {
+				wrt.write(w + '\n');
+			}
+			wrt.close();
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
 	}
 
 	

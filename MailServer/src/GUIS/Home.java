@@ -68,54 +68,51 @@ public class Home extends JFrame {
 		signup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-			String repass=uprepassword.getText();	
-			
-			
-			// EDIT IS Blank
-			
-			if(upusername.getText()==null) {
-				JOptionPane.showMessageDialog(null,"Please Fill Username Field !","Error !",JOptionPane.ERROR_MESSAGE);
-			}
-			
-			else if(uppassword.getText()==null) {
-				JOptionPane.showMessageDialog(null,"Please Fill Password Field !","Error !",JOptionPane.ERROR_MESSAGE);
-			}
-			
-			else if(uprepassword.getText()==null) {
-				JOptionPane.showMessageDialog(null,"Please Fill RePassword Field !","Error !",JOptionPane.ERROR_MESSAGE);
-			}
-			else if(upemail.getText()==null) {
-				JOptionPane.showMessageDialog(null,"Please Fill Email Field !","Error !",JOptionPane.ERROR_MESSAGE);
-			}
-			
-			else if(repass.compareTo(uppassword.getText())!=0) {
-				System.out.println(repass);
-				System.out.println(uppassword.getText());
-				JOptionPane.showMessageDialog(null,"Passwords Don't Match !","Error !",JOptionPane.ERROR_MESSAGE);
-
-			}
-			else {
-			String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-		      if(upemail.getText().matches(regex)) {
-		    	  JOptionPane.showMessageDialog(null,"Invalid Email Format !","Error !",JOptionPane.ERROR_MESSAGE);
-		      }
-			   
-			
-			
-			
-			Contact input=new Contact();
-			input.setname(upusername.getText());
-			input.setpassword(uppassword.getText());
-			input.setemail(upemail.getText());
-			App test=new App();
-			if(test.signup(input)) {
-				JOptionPane.showMessageDialog(null,"Account Created Successfully !");
-			}
-			else {
-				JOptionPane.showMessageDialog(null,"Email Already Exist !","Error !",JOptionPane.ERROR_MESSAGE);
-			}
-			
-			}
+				String repass=uprepassword.getText();	
+				
+				
+				// EDIT IS Blank
+				
+				if(upusername.getText()==null) {
+					JOptionPane.showMessageDialog(null,"Please Fill Username Field !","Error !",JOptionPane.ERROR_MESSAGE);
+				}
+				
+				else if(uppassword.getText()==null) {
+					JOptionPane.showMessageDialog(null,"Please Fill Password Field !","Error !",JOptionPane.ERROR_MESSAGE);
+				}
+				
+				else if(uprepassword.getText()==null) {
+					JOptionPane.showMessageDialog(null,"Please Fill RePassword Field !","Error !",JOptionPane.ERROR_MESSAGE);
+				}
+				else if(upemail.getText()==null) {
+					JOptionPane.showMessageDialog(null,"Please Fill Email Field !","Error !",JOptionPane.ERROR_MESSAGE);
+				}
+				
+				else if(repass.compareTo(uppassword.getText())!=0) {
+					System.out.println(repass);
+					System.out.println(uppassword.getText());
+					JOptionPane.showMessageDialog(null,"Passwords Don't Match !","Error !",JOptionPane.ERROR_MESSAGE);
+	
+				}
+				else {
+					String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+				    if(!upemail.getText().matches(regex)) {
+				   	  JOptionPane.showMessageDialog(null,"Invalid Email Format !","Error !",JOptionPane.ERROR_MESSAGE);
+				    } 
+				    else {
+				    	Contact input=new Contact();
+						input.setname(upusername.getText());
+						input.setpassword(uppassword.getText());
+						input.setemail(upemail.getText());
+						App test=new App();
+						if(test.signup(input)) {
+							JOptionPane.showMessageDialog(null,"Account Created Successfully !");
+						}
+						else {
+							JOptionPane.showMessageDialog(null,"Email Already Exist !","Error !",JOptionPane.ERROR_MESSAGE);
+						}
+				    }
+				}
 			}
 		});
 		signup.setForeground(Color.WHITE);
