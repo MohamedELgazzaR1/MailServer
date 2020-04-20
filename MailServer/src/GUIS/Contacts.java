@@ -42,7 +42,7 @@ public class Contacts extends JFrame {
 	 * Create the frame.
 	 */
 	public Contacts() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 618, 387);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -63,6 +63,10 @@ public class Contacts extends JFrame {
 		textField.setColumns(10);
 		
 		JButton btnNewButton = new JButton("Add Contact");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnNewButton.setBounds(416, 64, 137, 44);
 		contentPane.add(btnNewButton);
 		

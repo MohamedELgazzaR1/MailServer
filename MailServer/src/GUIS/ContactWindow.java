@@ -42,9 +42,9 @@ public class ContactWindow extends JFrame {
 	private Choice sort;
 	private JButton refreshBtn;
 	private JButton contactBtn;
-	private JButton addFolderBtn;
 	private JLabel Username;
 	private JLabel lblSelectFolder;
+	private JTextField textField_1;
 	
 
 	/**
@@ -78,16 +78,36 @@ public class ContactWindow extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
+		JButton btnAddFolder = new JButton("Add Folder");
+		btnAddFolder.setForeground(Color.WHITE);
+		btnAddFolder.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+		btnAddFolder.setBackground(SystemColor.textHighlight);
+		btnAddFolder.setBounds(31, 355, 144, 42);
+		contentPane.add(btnAddFolder);
+		
+		JLabel lblFolderName = new JLabel("Folder Name");
+		lblFolderName.setHorizontalAlignment(SwingConstants.LEFT);
+		lblFolderName.setForeground(Color.WHITE);
+		lblFolderName.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblFolderName.setBackground(Color.WHITE);
+		lblFolderName.setBounds(12, 412, 83, 31);
+		contentPane.add(lblFolderName);
+		
+		textField_1 = new JTextField();
+		textField_1.setColumns(10);
+		textField_1.setBounds(104, 410, 145, 33);
+		contentPane.add(textField_1);
+		
 		lblSelectFolder = new JLabel("Select Folder");
 		lblSelectFolder.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSelectFolder.setForeground(Color.WHITE);
 		lblSelectFolder.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblSelectFolder.setBackground(Color.WHITE);
-		lblSelectFolder.setBounds(31, 358, 113, 23);
+		lblSelectFolder.setBounds(12, 456, 113, 23);
 		contentPane.add(lblSelectFolder);
 		
 		Choice FolderSelect = new Choice();
-		FolderSelect.setBounds(31, 411, 219, 40);
+		FolderSelect.setBounds(30, 485, 219, 40);
 		contentPane.add(FolderSelect);
 		FolderSelect.add("Inbox");
 		FolderSelect.add("Trash");
@@ -122,7 +142,7 @@ public class ContactWindow extends JFrame {
 		});
 		composeBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		composeBtn.setBackground(SystemColor.textHighlight);
-		composeBtn.setBounds(31, 281, 144, 42);
+		composeBtn.setBounds(31, 300, 144, 42);
 		contentPane.add(composeBtn);
 		
 		nextBtn = new JButton("Next Page");
@@ -208,21 +228,10 @@ public class ContactWindow extends JFrame {
 			}
 		});
 		contactBtn.setForeground(Color.WHITE);
-		contactBtn.setBounds(31, 205, 144, 42);
+		contactBtn.setBounds(31, 245, 144, 42);
 		contentPane.add(contactBtn);
 		contactBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		contactBtn.setBackground(SystemColor.textHighlight);
-		
-		addFolderBtn = new JButton("Add Folder");
-		addFolderBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		addFolderBtn.setForeground(Color.WHITE);
-		addFolderBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
-		addFolderBtn.setBackground(SystemColor.textHighlight);
-		addFolderBtn.setBounds(31, 455, 144, 42);
-		contentPane.add(addFolderBtn);
 		
 		JLabel lblName = new JLabel(currentUser.getname());
 		lblName.setHorizontalAlignment(SwingConstants.LEFT);

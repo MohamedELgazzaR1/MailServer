@@ -10,6 +10,14 @@ import javax.swing.JPanel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import Classes.App;
+import Classes.Contact;
+import Classes.Mail;
+import classes.*;
+import interfaces.*;
+
+
 import javax.swing.JTextPane;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -39,7 +47,14 @@ public class ComposeMessage extends JFrame{
 	private Choice priority;
 	private JLabel priorityLbl;
 	private JLabel lblNewLabel;
+	private JButton btnNewButton;
+	private JButton btnNewButton_1;
 
+	
+	ILinkedList attaches = new SinglyLinkedList();
+	private JButton draftBtn_1;
+	private JButton btnClear;
+	private JButton btnViewAttachments;
 	/**
 	 * Launch the application.
 	 */
@@ -55,6 +70,7 @@ public class ComposeMessage extends JFrame{
 			}
 		});
 		currentEmail = args[0];
+		
 	}
 
 	/**
@@ -67,6 +83,24 @@ public class ComposeMessage extends JFrame{
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		Choice priority_1 = new Choice();
+		priority_1.setBounds(829, 138, 143, 22);
+		contentPane.add(priority_1);
+		
+		btnViewAttachments = new JButton("View Attachments");
+		btnViewAttachments.setForeground(Color.WHITE);
+		btnViewAttachments.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+		btnViewAttachments.setBackground(SystemColor.textHighlight);
+		btnViewAttachments.setBounds(829, 90, 144, 42);
+		contentPane.add(btnViewAttachments);
+		
+		btnClear = new JButton("Clear Text");
+		btnClear.setForeground(Color.WHITE);
+		btnClear.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 14));
+		btnClear.setBackground(SystemColor.textHighlight);
+		btnClear.setBounds(21, 166, 104, 42);
+		contentPane.add(btnClear);
 		
 		
 		toLbl = new JLabel("To");
@@ -102,9 +136,8 @@ public class ComposeMessage extends JFrame{
 		sendBtn.setForeground(Color.WHITE);
 		sendBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
 				// Get list of recipients
-				String[] emailList = new String[100];
+				IQueue emailList = new LinkedBased();
 				int recipientNum = 0;
 				String toFieldInput = toField.getText();
 				String hold = "";
@@ -115,27 +148,42 @@ public class ComposeMessage extends JFrame{
 					else {
 						if (i==0) {
 							JOptionPane.showMessageDialog(null,"Invalid format for list of recipients!","Error",JOptionPane.ERROR_MESSAGE);
-							break;
+							return;
 						}
 						else {
-							emailList[recipientNum] = hold;
-							hold = "";
-							recipientNum++;
+							if (!Contact.checkmail(hold)) {
+								JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
+								return;
+							} else {
+								emailList.enqueue(hold);
+								hold = "";
+								recipientNum++;
+							}
 						}
 					}
-					
 				}
-				// Check email format
-				String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-				for (int i = 0; i < recipientNum ; i++) {
-					if(!emailList[i].matches(regex)){
-						JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-					}
+				if (!App.isBlankString(hold)) {
+					emailList.enqueue(hold);
+					hold = "";
 				}
-				
 				// Prepare subject line and message contents
 				String subject = subjectField.getText();
 				String message = messageField.getText();
+				String prio = priority.getSelectedItem();
+				int out;
+				if (prio.compareTo("Normal") == 0) {
+					out = 3;
+				} else if (prio.compareTo("Very High") == 0) {
+					out = 1;
+				} else if (prio.compareTo("High") == 0) {
+					out = 2;
+				} else if (prio.compareTo("Low") == 0) {
+					out = 4;
+				} else {
+					out = 5;
+				}
+				
+				Mail.newEmail(false, out, emailList, subject , attaches, message, currentEmail);
 			}
 		});
 		sendBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
@@ -148,8 +196,8 @@ public class ComposeMessage extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser jf=new JFileChooser();
 				if(jf.showOpenDialog(null)==jf.APPROVE_OPTION) {
-					java.io.File file=jf.getSelectedFile();
-					//TODO COPYING ATTACHMENT TO EMAIL FILES
+					File file=jf.getSelectedFile();
+					attaches.add(file);
 				}
 				
 				
@@ -158,7 +206,7 @@ public class ComposeMessage extends JFrame{
 		addAttachBtn.setForeground(Color.WHITE);
 		addAttachBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		addAttachBtn.setBackground(SystemColor.textHighlight);
-		addAttachBtn.setBounds(750, 111, 144, 42);
+		addAttachBtn.setBounds(829, 42, 144, 42);
 		contentPane.add(addAttachBtn);
 		
 		discardBtn = new JButton("Discard");
@@ -185,7 +233,7 @@ public class ComposeMessage extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				
 				// Get list of recipients
-				String[] emailList = new String[100];
+				IQueue emailList = new LinkedBased();
 				int recipientNum = 0;
 				String toFieldInput = toField.getText();
 				String hold = "";
@@ -196,42 +244,48 @@ public class ComposeMessage extends JFrame{
 					else {
 						if (i==0) {
 							JOptionPane.showMessageDialog(null,"Invalid format for list of recipients!","Error",JOptionPane.ERROR_MESSAGE);
-							break;
+							return;
 						}
 						else {
-							emailList[recipientNum] = hold;
-							hold = "";
-							recipientNum++;
+							if (!Contact.checkmail(hold)) {
+								JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
+								return;
+							} else {
+								emailList.enqueue(hold);
+								hold = "";
+								recipientNum++;
+							}
 						}
 					}
-					
 				}
-				// Check email format
-				String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-				for (int i = 0; i < recipientNum ; i++) {
-					if(!emailList[i].matches(regex)){
-						JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-					}
+				if (!App.isBlankString(hold)) {
+					emailList.enqueue(hold);
+					hold = "";
 				}
 				
 				// Prepare subject line and message contents
 				String subject = subjectField.getText();
 				String message = messageField.getText();
-				
-				File mailfolder = new File("D:\\MailServerData\\" + currentEmail + "\\Draft"  , "1");
-				mailfolder.mkdir();
-				File mail = new File(mailfolder, "mailcontent.txt");
-				try {
-					mail.createNewFile();
-				} catch (IOException ee) {
-					
+				String prio = priority.getSelectedItem();
+				int out;
+				if (prio.compareTo("Normal") == 0) {
+					out = 3;
+				} else if (prio.compareTo("Very High") == 0) {
+					out = 1;
+				} else if (prio.compareTo("High") == 0) {
+					out = 2;
+				} else if (prio.compareTo("Low") == 0) {
+					out = 4;
+				} else {
+					out = 5;
 				}
 				
+				Mail.newEmail(true, out, emailList, subject , attaches, message, currentEmail);
 			}
 		});
 		draftBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		draftBtn.setBackground(SystemColor.textHighlight);
-		draftBtn.setBounds(444, 492, 144, 42);
+		draftBtn.setBounds(448, 492, 144, 42);
 		contentPane.add(draftBtn);
 		
 		priority = new Choice();
@@ -240,20 +294,35 @@ public class ComposeMessage extends JFrame{
 		priority.add("High");
 		priority.add("Low");
 		priority.add("Very Low");
-		priority.setBounds(758, 56, 136, 20);
+		priority.setBounds(134, 130, 136, 20);
 		contentPane.add(priority);
 		
 		priorityLbl = new JLabel("Priority");
 		priorityLbl.setForeground(Color.WHITE);
 		priorityLbl.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		priorityLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		priorityLbl.setBounds(649, 56, 104, 20);
+		priorityLbl.setBounds(11, 128, 104, 20);
 		contentPane.add(priorityLbl);
 		
 		lblNewLabel = new JLabel("");
 		lblNewLabel.setIcon(new ImageIcon(ComposeMessage.class.getResource("/Images/paperplanemaking.jpeg")));
-		lblNewLabel.setBounds(0, -8, 1007, 592);
+		lblNewLabel.setBounds(0, -18, 1007, 592);
 		contentPane.add(lblNewLabel);
+		
+		btnNewButton = new JButton("New button");
+		btnNewButton.setBounds(693, 29, 124, 34);
+		contentPane.add(btnNewButton);
+		
+		btnNewButton_1 = new JButton("New button");
+		btnNewButton_1.setBounds(712, 42, 85, 21);
+		contentPane.add(btnNewButton_1);
+		
+		draftBtn_1 = new JButton("Save Draft");
+		draftBtn_1.setForeground(Color.WHITE);
+		draftBtn_1.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+		draftBtn_1.setBackground(SystemColor.textHighlight);
+		draftBtn_1.setBounds(594, 492, 144, 42);
+		contentPane.add(draftBtn_1);
 		
 	}
 }

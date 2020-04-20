@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+import javax.swing.JOptionPane;
+
 import InterFaces.IContact;
 
 public class Contact implements IContact {
@@ -128,6 +130,12 @@ public class Contact implements IContact {
 		
 	}
 
-	
+	public static Boolean checkmail(String mail) {
+		String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+			if(!mail.matches(regex)){
+				return false;
+			}
+		return true;
+	}
 	
 }
