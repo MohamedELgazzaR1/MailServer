@@ -25,15 +25,11 @@ import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import java.awt.Choice;
 import javax.swing.JToggleButton;
+import java.awt.SystemColor;
 
 public class ContactWindow extends JFrame {
 
 	private JPanel contentPane;
-	private JPanel tabsPanel;
-	private JButton inboxBtn;
-	private JButton draftBtn;
-	private JButton sentBtn;
-	private JButton trashBtn;
 	private JPanel panel_1;
 	private JButton composeBtn;
 	private JButton nextBtn;
@@ -47,6 +43,8 @@ public class ContactWindow extends JFrame {
 	private JButton refreshBtn;
 	private JButton contactBtn;
 	private JButton addFolderBtn;
+	private JLabel Username;
+	private JLabel lblSelectFolder;
 	
 
 	/**
@@ -57,7 +55,7 @@ public class ContactWindow extends JFrame {
 			public void run() {
 				try {
 					ContactWindow frame = new ContactWindow();
-					frame.setVisible(true);
+					frame.setVisible(true);	
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -80,100 +78,37 @@ public class ContactWindow extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		tabsPanel = new JPanel();
-		tabsPanel.setBounds(30, 190, 100, 165);
-		tabsPanel.setBackground(Color.WHITE);
-		contentPane.add(tabsPanel);
-		tabsPanel.setLayout(null);
+		lblSelectFolder = new JLabel("Select Folder");
+		lblSelectFolder.setHorizontalAlignment(SwingConstants.LEFT);
+		lblSelectFolder.setForeground(Color.WHITE);
+		lblSelectFolder.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblSelectFolder.setBackground(Color.WHITE);
+		lblSelectFolder.setBounds(31, 358, 113, 23);
+		contentPane.add(lblSelectFolder);
 		
-		inboxBtn = new JButton("Inbox");
-		inboxBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		inboxBtn.setBackground(Color.WHITE);
-		inboxBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//Highlight button of folder selected
-				inboxBtn.setBackground(new Color(173, 216, 230));
-				draftBtn.setBackground(Color.WHITE);
-				sentBtn.setBackground(Color.WHITE);
-				trashBtn.setBackground(Color.WHITE);
-				
-				inboxBtn.setFont(new Font("Tahoma", Font.BOLD, 11));
-				draftBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-				sentBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-				trashBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-
-			}
-		});
-		inboxBtn.setBounds(0, 0, 102, 41);
-		tabsPanel.add(inboxBtn);
+		Choice FolderSelect = new Choice();
+		FolderSelect.setBounds(31, 411, 219, 40);
+		contentPane.add(FolderSelect);
+		FolderSelect.add("Inbox");
+		FolderSelect.add("Trash");
+		FolderSelect.add("");
 		
-		draftBtn = new JButton("Draft");
-		draftBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		draftBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//Highlight button of folder selected
-				inboxBtn.setBackground(Color.WHITE);
-				draftBtn.setBackground(new Color(173, 216, 230));
-				sentBtn.setBackground(Color.WHITE);
-				trashBtn.setBackground(Color.WHITE);
-				
-				inboxBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-				draftBtn.setFont(new Font("Tahoma", Font.BOLD, 11));
-				sentBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-				trashBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-			}
-		});
-		draftBtn.setBackground(Color.WHITE);
-		draftBtn.setBounds(0, 41, 102, 41);
-		tabsPanel.add(draftBtn);
-		
-		sentBtn = new JButton("Sent");
-		sentBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		sentBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//Highlight button of folder selected
-				inboxBtn.setBackground(Color.WHITE);
-				draftBtn.setBackground(Color.WHITE);
-				sentBtn.setBackground(new Color(173, 216, 230));
-				trashBtn.setBackground(Color.WHITE);
-				
-				inboxBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-				draftBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-				sentBtn.setFont(new Font("Tahoma", Font.BOLD, 11));
-				trashBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-			}
-		});
-		sentBtn.setBackground(Color.WHITE);
-		sentBtn.setBounds(0, 82, 102, 41);
-		tabsPanel.add(sentBtn);
-		
-		trashBtn = new JButton("Trash");
-		trashBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		trashBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//Highlight button of folder selected
-				inboxBtn.setBackground(Color.WHITE);
-				draftBtn.setBackground(Color.WHITE);
-				sentBtn.setBackground(Color.WHITE);
-				trashBtn.setBackground(new Color(173, 216, 230));
-				
-				inboxBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-				draftBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-				sentBtn.setFont(new Font("Tahoma", Font.PLAIN, 11));
-				trashBtn.setFont(new Font("Tahoma", Font.BOLD, 11));
-			}
-		});
-		trashBtn.setBackground(Color.WHITE);
-		trashBtn.setBounds(0, 123, 102, 41);
-		tabsPanel.add(trashBtn);
+		Username = new JLabel("UserName");
+		Username.setHorizontalAlignment(SwingConstants.LEFT);
+		Username.setForeground(Color.WHITE);
+		Username.setFont(new Font("Tahoma", Font.BOLD, 20));
+		Username.setBackground(Color.WHITE);
+		Username.setBounds(12, 16, 121, 23);
+		contentPane.add(Username);
 		
 		panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
-		panel_1.setBounds(162, 115, 711, 315);
+		panel_1.setBounds(256, 205, 711, 315);
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
 		composeBtn = new JButton("New Message");
+		composeBtn.setForeground(Color.WHITE);
 		composeBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -186,11 +121,12 @@ public class ContactWindow extends JFrame {
 			}
 		});
 		composeBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
-		composeBtn.setBackground(Color.CYAN);
-		composeBtn.setBounds(8, 34, 144, 42);
+		composeBtn.setBackground(SystemColor.textHighlight);
+		composeBtn.setBounds(31, 281, 144, 42);
 		contentPane.add(composeBtn);
 		
 		nextBtn = new JButton("Next Page");
+		nextBtn.setForeground(Color.WHITE);
 		nextBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// if less than last page number (after loading emails)
@@ -198,11 +134,12 @@ public class ContactWindow extends JFrame {
 				pageLbl.setText("Current Page: " + currentPage);
 			}
 		});
-		nextBtn.setBackground(Color.LIGHT_GRAY);
-		nextBtn.setBounds(599, 522, 131, 23);
+		nextBtn.setBackground(SystemColor.textHighlight);
+		nextBtn.setBounds(731, 538, 131, 23);
 		contentPane.add(nextBtn);
 		
 		prevBtn = new JButton("Previous Page");
+		prevBtn.setForeground(Color.WHITE);
 		prevBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (currentPage>1) {
@@ -215,27 +152,27 @@ public class ContactWindow extends JFrame {
 				}
 			}
 		});
-		prevBtn.setBackground(Color.LIGHT_GRAY);
-		prevBtn.setBounds(211, 522, 131, 23);
+		prevBtn.setBackground(SystemColor.textHighlight);
+		prevBtn.setBounds(292, 538, 131, 23);
 		contentPane.add(prevBtn);
 		
 		pageLbl = new JLabel("Current Page: " + currentPage);
 		pageLbl.setForeground(Color.WHITE);
 		pageLbl.setFont(new Font("Tahoma", Font.BOLD, 16));
 		pageLbl.setBackground(Color.WHITE);
-		pageLbl.setBounds(390, 520, 154, 23);
+		pageLbl.setBounds(507, 537, 154, 23);
 		contentPane.add(pageLbl);
 		
 		lblSearch = new JLabel("Search");
-		lblSearch.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSearch.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSearch.setForeground(Color.WHITE);
 		lblSearch.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblSearch.setBackground(Color.WHITE);
-		lblSearch.setBounds(197, 25, 154, 23);
+		lblSearch.setBounds(263, 59, 70, 23);
 		contentPane.add(lblSearch);
 		
 		textField = new JTextField();
-		textField.setBounds(372, 14, 391, 42);
+		textField.setBounds(372, 40, 391, 42);
 		contentPane.add(textField);
 		textField.setColumns(10);
 		
@@ -244,7 +181,7 @@ public class ContactWindow extends JFrame {
 		lblSort.setForeground(Color.WHITE);
 		lblSort.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblSort.setBackground(Color.WHITE);
-		lblSort.setBounds(197, 75, 154, 23);
+		lblSort.setBounds(263, 129, 154, 23);
 		contentPane.add(lblSort);
 		
 		sort = new Choice();
@@ -252,7 +189,7 @@ public class ContactWindow extends JFrame {
 		sort.add("Date & Time Descendingly");
 		sort.add("Alphabetical Order");
 		sort.add("Reverse Alphabetical Order");
-		sort.setBounds(375, 75, 267, 40);
+		sort.setBounds(436, 130, 267, 40);
 		contentPane.add(sort);
 		
 		refreshBtn = new JButton("");
@@ -263,19 +200,39 @@ public class ContactWindow extends JFrame {
 		contentPane.add(refreshBtn);
 		
 		contactBtn = new JButton("Contacts");
-		contactBtn.setBounds(8, 115, 144, 42);
+		contactBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Contacts contacts=new Contacts();
+				contacts.setVisible(true);
+				
+			}
+		});
+		contactBtn.setForeground(Color.WHITE);
+		contactBtn.setBounds(31, 205, 144, 42);
 		contentPane.add(contactBtn);
 		contactBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
-		contactBtn.setBackground(Color.CYAN);
+		contactBtn.setBackground(SystemColor.textHighlight);
 		
 		addFolderBtn = new JButton("Add Folder");
+		addFolderBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		addFolderBtn.setForeground(Color.WHITE);
 		addFolderBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
-		addFolderBtn.setBackground(Color.CYAN);
-		addFolderBtn.setBounds(31, 467, 144, 42);
+		addFolderBtn.setBackground(SystemColor.textHighlight);
+		addFolderBtn.setBounds(31, 455, 144, 42);
 		contentPane.add(addFolderBtn);
 		
+		JLabel lblName = new JLabel(currentUser.getname());
+		lblName.setHorizontalAlignment(SwingConstants.LEFT);
+		lblName.setFont(new Font("Agency FB", Font.BOLD, 28));
+		lblName.setForeground(new Color(240, 255, 255));
+		lblName.setBounds(22, 40, 227, 49);
+		contentPane.add(lblName);
+		
 		JLabel bgImage = new JLabel("");
-		bgImage.setIcon(new ImageIcon(ContactWindow.class.getResource("/Images/5195ebb8c5f9772deda82aa2937134d3 (4).jpg")));
+		bgImage.setIcon(new ImageIcon(ContactWindow.class.getResource("/Images/opening-email-ss-1920.jpg")));
 		bgImage.setBounds(0, -8, 1007, 592);
 		contentPane.add(bgImage);
 	}
