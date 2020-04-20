@@ -81,8 +81,10 @@ public class Mail {
 		try {
 			FileWriter wrt = new FileWriter(sent, true);
 			wrt.write(mailname + '\n' + Integer.toString(prior) + '\n');
-			if (!mails.isEmpty()) {
+			if (!mails.isEmpty() && !Draft) {
 				wrt.write((String) mails.dequeue());
+			} else if (!mails2.isEmpty() && Draft) {
+				wrt.write((String) mails2.dequeue());
 			}
 			wrt.write('\n' + obj +'\n');
 			wrt.close();
