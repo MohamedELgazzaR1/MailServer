@@ -98,9 +98,9 @@ public class Contact implements IContact {
 		try {
 			FileWriter wrt = new FileWriter(contactinfo, true);
 			wrt.write(this.name + '\n' + this.email + '\n' + this.password + '\n');
-			for(String w : folders) {
+			/*for(String w : folders) {
 				wrt.write(w + '\n');
-			}
+			}*/
 			wrt.close();
 		} catch (IOException e) {
 			return false;
