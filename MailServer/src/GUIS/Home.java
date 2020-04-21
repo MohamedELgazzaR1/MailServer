@@ -44,7 +44,6 @@ public class Home extends JFrame {
 			public void run() {
 				try {
 					
-					//frame.setUndecorated(true);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -105,6 +104,10 @@ public class Home extends JFrame {
 						input.setemail(upemail.getText());
 						App test=new App();
 						if(test.signup(input)) {
+							upusername.setText("");
+							upemail.setText("");
+							uppassword.setText("");
+							uprepassword.setText("");
 							JOptionPane.showMessageDialog(null,"Account created successfully!");
 						}
 						else {

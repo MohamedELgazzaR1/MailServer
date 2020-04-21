@@ -59,7 +59,7 @@ public class App implements IApp{
 			File myobj =new File("D:\\MailServerData\\database.txt");
 			Scanner myreader= new Scanner(myobj);
 			while(myreader.hasNextLine()) {
-				String data=myreader.next();
+				String data=myreader.nextLine();
 				if(linecounter%2==0) {
 					if(contact.getemail().compareTo(data)==0) {
 						myreader.close();
