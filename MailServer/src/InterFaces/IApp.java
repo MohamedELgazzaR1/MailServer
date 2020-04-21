@@ -15,4 +15,12 @@ public interface IApp {
 	*/
 	public boolean signup(IContact contact);
 	
+	/**
+	 * Send a new email
+	 * @param email should contain all the information needed
+	 *     sender, list of receivers, list of attachments, email body, ...
+	 * @return false if something wrong happened like sending to non-existing user.
+	 */
+	public boolean compose(IMail email);
+	
 }

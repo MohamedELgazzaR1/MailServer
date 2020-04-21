@@ -10,33 +10,40 @@ import javax.swing.JOptionPane;
 
 import InterFaces.IApp;
 import InterFaces.IContact;
+import InterFaces.IMail;
 
 public class App implements IApp{
 
-	
-	private static void appendUsingFileWriter(String filePath, String text) {
-		File file = new File(filePath);
-		FileWriter fr = null;
-		try {
-			// Below constructor argument decides whether to append or override
-			fr = new FileWriter(file, true);
-			fr.write(text);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				fr.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	public static boolean isBlankString(String string) {
+	    return string == null || string.trim().isEmpty();
 	}
-
-	
 	
 	@Override
 	public boolean signin(String email, String password) {
+
+		
+		Scanner myreader;
+		try {
+			int linecounter=0;
+			File myobj =new File("D:\\MailServerData\\database.txt");
+			
+			myreader = new Scanner(myobj);
+			while(myreader.hasNextLine()) {
+				String data=myreader.next();
+				if(linecounter%2==0) {
+					if(email.compareTo(data)==0) {
+						if(password.compareTo(myreader.next())==0) {
+						myreader.close();
+						return true;
+						}
+					}	
+				}
+				linecounter++;
+			}
+			myreader.close();
+		} catch (FileNotFoundException e) {
+			return false;
+		}
 
 		return false;
 	}
@@ -55,24 +62,40 @@ public class App implements IApp{
 				String data=myreader.next();
 				if(linecounter%2==0) {
 					if(contact.getemail().compareTo(data)==0) {
+						myreader.close();
 						return false;
 					}	
 				}
 				linecounter++;
 			}
 			myreader.close();
-			if(linecounter==0) {
-				appendUsingFileWriter("D:\\MailServerData\\database.txt",contact.getemail()+"\n"+contact.getpassword());
-			}else {
-			appendUsingFileWriter("D:\\MailServerData\\database.txt","\n"+contact.getemail()+"\n"+contact.getpassword());
+			try {
+				FileWriter wrt = new FileWriter(myobj, true);
+				if(linecounter==0) {
+					wrt.write(contact.getemail()+"\n"+contact.getpassword());
+				}else {
+					wrt.write("\n"+contact.getemail()+"\n"+contact.getpassword());
+				}
+				wrt.close();
+			} catch (IOException e) {
+				return false;
 			}
-		
-			
+			if (!contact.newcontact()) {
+				return false;
+			}
 		} catch (FileNotFoundException e) {
 			return false;
 		}
 		
 		return true;
 	}
+
+	@Override
+	public boolean compose(IMail email) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	
 
 }

@@ -1,5 +1,6 @@
 package InterFaces;
 
+import java.io.IOException;
 
 public interface IContact {
 	/*
@@ -33,7 +34,7 @@ public interface IContact {
 	 * create the 4 folders each has empty emails file
 	 * stay at inbox folder  					
 	 */
-	public Boolean addcontact();
+	public Boolean newcontact();
 	
 	public void setrepassword(String entered);
 	
@@ -50,5 +51,5 @@ public interface IContact {
 	public String getpassword();
 	
 	public String getname();
-	
+
 }
