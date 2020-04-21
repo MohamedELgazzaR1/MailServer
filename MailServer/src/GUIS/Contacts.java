@@ -42,8 +42,9 @@ public class Contacts extends JFrame {
 	 * Create the frame.
 	 */
 	public Contacts() {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 618, 387);
+		setBounds(100, 100, 604, 369);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);

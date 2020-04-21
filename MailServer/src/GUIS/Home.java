@@ -56,8 +56,9 @@ public class Home extends JFrame {
 	 * Create the frame.
 	 */
 	public Home() {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1025, 621);
+		setBounds(100, 100, 1013, 621);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

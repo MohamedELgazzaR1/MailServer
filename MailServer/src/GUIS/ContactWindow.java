@@ -120,6 +120,7 @@ public class ContactWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public ContactWindow() {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1025, 621);
 		contentPane = new JPanel();
@@ -293,6 +294,17 @@ public class ContactWindow extends JFrame {
 		contentPane.add(sort);
 		
 		refreshBtn = new JButton("");
+		refreshBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				String[] user = new String[4];
+				user[0] = currentUser.getname();
+				user[1] = currentUser.getemail();
+				user[2] = currentUser.getpassword();
+				user[3] =currentUser.getrepassword() ;
+				ContactWindow.main(user);
+			}
+		});
 		refreshBtn.setIcon(new ImageIcon(ContactWindow.class.getResource("/Images/refresh.jpg")));
 		refreshBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		refreshBtn.setBackground(Color.WHITE);

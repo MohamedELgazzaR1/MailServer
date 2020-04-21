@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.StyledDocument;
 
 import Classes.App;
 import Classes.Contact;
@@ -30,15 +32,21 @@ import java.awt.event.ActionEvent;
 import java.awt.Choice;
 import java.awt.SystemColor;
 import javax.swing.ImageIcon;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JTextArea;
+import java.awt.Component;
+import javax.swing.JTextField;
+import javax.swing.JFormattedTextField;
 
 public class ComposeMessage extends JFrame{
 
 	private JPanel contentPane;
 	private JLabel toLbl;
-	private JTextPane toField;
+	private JTextArea toField;
 	private JLabel subjectLbl;
-	private JTextPane subjectField;
-	private JTextPane messageField;
+	private JTextField subjectField;
+	private JTextArea messageField;
 	private JButton sendBtn;
 	private JButton addAttachBtn;
 	private JButton discardBtn;
@@ -47,12 +55,17 @@ public class ComposeMessage extends JFrame{
 	private Choice priority;
 	private JLabel priorityLbl;
 	private JLabel lblNewLabel;
-
-	
-	ILinkedList attaches = new SinglyLinkedList();
+	private Choice attachList;
 	private JButton btnClear;
 	private JButton btnViewAttachment;
 	private JButton btnRemoveAttachment;
+	private JLabel lblAttachments;
+	private JScrollPane scrollPaneMessage;
+	private JScrollPane scrollPaneTo;
+	private AbstractDocument doc;
+	private static final int MAX_CHARACTERS = 10;
+	
+	ILinkedList attaches = new SinglyLinkedList();
 	/**
 	 * Launch the application.
 	 */
@@ -75,75 +88,76 @@ public class ComposeMessage extends JFrame{
 	 * Create the application.
 	 */
 	public ComposeMessage() {
+		setResizable(false);
 		
-		setBounds(100, 100, 1025, 621);
+		setBounds(100, 100, 1025, 609);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		Choice attachList = new Choice();
-		attachList.setBounds(609, 128, 167, 27);
+		attachList = new Choice();
+		attachList.setBounds(609, 128, 167, 20);
 		contentPane.add(attachList);
 		
 		btnViewAttachment = new JButton("View Selected Attachment");
+		btnViewAttachment.setBounds(782, 113, 191, 42);
 		btnViewAttachment.setForeground(Color.WHITE);
 		btnViewAttachment.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 9));
 		btnViewAttachment.setBackground(SystemColor.textHighlight);
-		btnViewAttachment.setBounds(782, 113, 191, 42);
 		contentPane.add(btnViewAttachment);
 		
 		btnClear = new JButton("Clear Text");
+		btnClear.setBounds(21, 166, 104, 42);
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to clear the message?","Confirmation",JOptionPane.YES_NO_OPTION);
-				if(dialogResult == JOptionPane.YES_OPTION) {
-					messageField.setText("");
+				if (!messageField.getText().isBlank()) {
+					int dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to clear the message?","Confirmation",JOptionPane.YES_NO_OPTION);
+					if(dialogResult == JOptionPane.YES_OPTION) {
+						messageField.setText("");
+					}
 				}
 			}
 		});
 		btnClear.setForeground(Color.WHITE);
 		btnClear.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 14));
 		btnClear.setBackground(SystemColor.textHighlight);
-		btnClear.setBounds(21, 166, 104, 42);
 		contentPane.add(btnClear);
 		
 		
 		toLbl = new JLabel("To");
+		toLbl.setBounds(46, 29, 40, 39);
 		toLbl.setForeground(Color.WHITE);
 		toLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		toLbl.setFont(new Font("Tahoma", Font.BOLD, 21));
-		toLbl.setBounds(62, 29, 40, 39);
 		contentPane.add(toLbl);
 		
-		toField = new JTextPane();
+		toField = new JTextArea();
+		toField.setBounds(0, 70, 492, 39);
+		toField.setWrapStyleWord(true);
+		toField.setLineWrap(true);
 		toField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		toField.setBounds(134, 29, 492, 39);
-		contentPane.add(toField);
+		
 		
 		subjectLbl = new JLabel("Subject");
+		subjectLbl.setBounds(19, 69, 94, 39);
 		subjectLbl.setForeground(Color.WHITE);
 		subjectLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		subjectLbl.setFont(new Font("Tahoma", Font.BOLD, 21));
-		subjectLbl.setBounds(21, 79, 94, 39);
 		contentPane.add(subjectLbl);
 		
-		subjectField = new JTextPane();
+		subjectField = new JTextField();
+		subjectField.setBounds(134, 77, 463, 23);
 		subjectField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		subjectField.setBounds(134, 79, 492, 39);
 		contentPane.add(subjectField);
 		
-		messageField = new JTextPane();
-		messageField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		messageField.setBounds(132, 166, 762, 290);
-		contentPane.add(messageField);
 		
 		sendBtn = new JButton("Send Message");
+		sendBtn.setBounds(132, 492, 144, 42);
 		sendBtn.setForeground(Color.WHITE);
 		sendBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to send this email?","Confirmation",JOptionPane.YES_NO_OPTION);
-				if(dialogResult == JOptionPane.YES_OPTION) {
+				
 					// Get list of recipients
 					IQueue emailList = new LinkedBased();
 					String toFieldInput = toField.getText();
@@ -169,8 +183,17 @@ public class ComposeMessage extends JFrame{
 						}
 					}
 					if (!App.isBlankString(hold)) {
-						emailList.enqueue(hold);
-						hold = "";
+						if (!Contact.checkmail(hold)) {
+							JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
+							return;
+						} else {
+							emailList.enqueue(hold);
+							hold = "";
+						}
+					}
+					if (emailList.size() == 0) {
+						JOptionPane.showMessageDialog(null,"Subject line is empty.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
 					}
 					// Prepare subject line and message contents
 					String subject = subjectField.getText();
@@ -190,16 +213,17 @@ public class ComposeMessage extends JFrame{
 					}
 				
 					Mail.newEmail(false, out, emailList, subject , attaches, message, currentEmail);
+					JOptionPane.showMessageDialog(null,"Email sent successfully.","",JOptionPane.INFORMATION_MESSAGE);
 					dispose();
 				}
-			}
+			
 		});
 		sendBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		sendBtn.setBackground(SystemColor.textHighlight);
-		sendBtn.setBounds(132, 492, 144, 42);
 		contentPane.add(sendBtn);
 		
 		addAttachBtn = new JButton("Add Attachment");
+		addAttachBtn.setBounds(782, 11, 191, 42);
 		addAttachBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser jf=new JFileChooser();
@@ -216,10 +240,10 @@ public class ComposeMessage extends JFrame{
 		addAttachBtn.setForeground(Color.WHITE);
 		addAttachBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		addAttachBtn.setBackground(SystemColor.textHighlight);
-		addAttachBtn.setBounds(782, 11, 191, 42);
 		contentPane.add(addAttachBtn);
 		
 		discardBtn = new JButton("Discard");
+		discardBtn.setBounds(750, 492, 144, 42);
 		discardBtn.setForeground(Color.WHITE);
 		discardBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -234,16 +258,14 @@ public class ComposeMessage extends JFrame{
 		});
 		discardBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		discardBtn.setBackground(SystemColor.textHighlight);
-		discardBtn.setBounds(750, 492, 144, 42);
 		contentPane.add(discardBtn);
 		
 		draftBtn = new JButton("Save Draft");
+		draftBtn.setBounds(448, 492, 144, 42);
 		draftBtn.setForeground(Color.WHITE);
 		draftBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				int dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to save the email as a draft?","Confirmation",JOptionPane.YES_NO_OPTION);
-				if(dialogResult == JOptionPane.YES_OPTION) {
 					// Get list of recipients
 					IQueue emailList = new LinkedBased();
 					String toFieldInput = toField.getText();
@@ -269,8 +291,13 @@ public class ComposeMessage extends JFrame{
 						}
 					}
 					if (!App.isBlankString(hold)) {
-						emailList.enqueue(hold);
-						hold = "";
+						if (!Contact.checkmail(hold)) {
+							JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
+							return;
+						} else {
+							emailList.enqueue(hold);
+							hold = "";
+						}
 					}
 				
 					// Prepare subject line and message contents
@@ -289,58 +316,94 @@ public class ComposeMessage extends JFrame{
 					} else {
 						out = 5;
 					}
+					
+					//
+					if (emailList.size() == 0 && subject.isBlank() && message.isBlank() && attaches.size() == 0) {
+						JOptionPane.showMessageDialog(null,"Cannot save an email without any data.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 				
 					Mail.newEmail(true, out, emailList, subject , attaches, message, currentEmail);
+					JOptionPane.showMessageDialog(null,"Email saved successfully.","",JOptionPane.INFORMATION_MESSAGE);
 					dispose();
 				}
-			}
+			
 		});
 		draftBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		draftBtn.setBackground(SystemColor.textHighlight);
-		draftBtn.setBounds(448, 492, 144, 42);
 		contentPane.add(draftBtn);
 		
 		priority = new Choice();
+		priority.setBounds(134, 130, 136, 20);
 		priority.add("Normal");
 		priority.add("Very High");
 		priority.add("High");
 		priority.add("Low");
 		priority.add("Very Low");
-		priority.setBounds(134, 130, 136, 20);
 		contentPane.add(priority);
 		
 		priorityLbl = new JLabel("Priority");
-		priorityLbl.setForeground(Color.WHITE);
-		priorityLbl.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		priorityLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		priorityLbl.setBounds(11, 128, 104, 20);
+		priorityLbl.setForeground(Color.WHITE);
+		priorityLbl.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 20));
+		priorityLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(priorityLbl);
 		
 		btnRemoveAttachment = new JButton("Remove Selected Attachment");
+		btnRemoveAttachment.setBounds(782, 60, 191, 42);
 		btnRemoveAttachment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String selectedAttach = attachList.getSelectedItem();
-				for (int i = 1 ; i <= attaches.size(); i++) {
-					File attachment = (File)attaches.get(i);
-					String temp = attachment.getName();
-					if ( selectedAttach.compareTo(temp) == 0 ){
-						attaches.remove(i);
-						break;
+				if (selectedAttach!= null) {
+					for (int i = 1 ; i <= attaches.size(); i++) {
+						File attachment = (File)attaches.get(i);
+						String temp = attachment.getName();
+						if ( selectedAttach.compareTo(temp) == 0 ){
+							attaches.remove(i);
+							break;
+						}
+					}
+					attachList.remove(selectedAttach);
+					if(attachList.countItems() > 0) {
+						attachList.select(0);
 					}
 				}
-				attachList.remove(selectedAttach);
-				attachList.select(0);
+				else {
+					JOptionPane.showMessageDialog(null,"Attachment list is empty.","Error",JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		btnRemoveAttachment.setForeground(Color.WHITE);
 		btnRemoveAttachment.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 9));
 		btnRemoveAttachment.setBackground(SystemColor.textHighlight);
-		btnRemoveAttachment.setBounds(782, 60, 191, 42);
 		contentPane.add(btnRemoveAttachment);
 		
+		lblAttachments = new JLabel("Attachment List");
+		lblAttachments.setBounds(597, 102, 183, 20);
+		lblAttachments.setHorizontalAlignment(SwingConstants.CENTER);
+		lblAttachments.setForeground(Color.WHITE);
+		lblAttachments.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 20));
+		contentPane.add(lblAttachments);
+		
+		messageField = new JTextArea();
+		messageField.setBounds(134, 166, 753, 313);
+		messageField.setWrapStyleWord(true);
+		messageField.setLineWrap(true);
+		messageField.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		
+		scrollPaneMessage = new JScrollPane(messageField);
+		scrollPaneMessage.setBounds(134, 166, 753, 313);
+		contentPane.add(scrollPaneMessage);
+		
+		scrollPaneTo = new JScrollPane(toField);
+		scrollPaneTo.setBounds(134, 29, 463, 39);
+		contentPane.add(scrollPaneTo);
+		
+		
 		lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon(ComposeMessage.class.getResource("/Images/paperplanemaking.jpeg")));
 		lblNewLabel.setBounds(0, -18, 1007, 592);
+		lblNewLabel.setIcon(new ImageIcon(ComposeMessage.class.getResource("/Images/paperplanemaking.jpeg")));
 		contentPane.add(lblNewLabel);
 		
 	}
