@@ -1,10 +1,64 @@
 package Classes;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Scanner;
 
-public class Folder {
+import javax.swing.JOptionPane;
+
+import InterFaces.IFolder;
+
+public class Folder implements IFolder {
+	File fldr;
+	
+	public Folder(String path) {
+		fldr = new File(path);
+	}
+	
+	public File get() {
+		return fldr;
+	}
+	
+	public static Boolean deleteData (File src, String deleteitem, int lines,Boolean destBool, File dest) {
+		File temp = new File(src.getParentFile(), "temp.txt");
+		try {
+			Scanner scan = new Scanner(src);
+			FileWriter writetemp = new FileWriter(temp, true);
+			FileWriter writedest = null;
+			if (destBool) {
+				writedest = new FileWriter(dest, true);
+			}
+			while(scan.hasNext()) {
+				String input = scan.nextLine();
+				if(input.compareTo(deleteitem) == 0) {
+					if (destBool) {
+						writedest.write(input);
+						for (int j = 1; j < lines; j++) {
+							writedest.write(scan.nextLine());
+						}
+					}
+				} else {
+					writetemp.write(input);
+				}
+			}
+			scan.close();
+			writetemp.close();
+			if (destBool) {
+				writedest.close();				
+			}
+			String P = src.getAbsolutePath();
+			src.delete();
+			File dump = new File(P);
+			temp.renameTo(dump);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,"System Files do not exist!","Error",JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
+	}
+	
 	public static Boolean copyFolder(File src, File dest) {
 		if (src.isDirectory()) {
 			if (!dest.exists()) {

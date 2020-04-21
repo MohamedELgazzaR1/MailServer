@@ -80,6 +80,11 @@ public class Contact implements IContact {
 			File mails = new File(defFolders, "mailsfile.txt");
 			try {
 				mails.createNewFile();
+				if (folder.compareTo("Trash") == 0){
+					mails = new File(defFolders, "Trashfile.txt");
+					mails.createNewFile();
+				}
+				
 			} catch (IOException e) {
 				return false;
 			}
