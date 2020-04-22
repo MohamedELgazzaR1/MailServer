@@ -1,8 +1,12 @@
 package Classes;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 
 import InterFaces.IContact;
 
@@ -13,9 +17,6 @@ public class Contact implements IContact {
 	String repassword;
 	String name;
 	
-	
-	
-
 	
 	public void setemail(String entered){
 		email=entered;
@@ -79,6 +80,11 @@ public class Contact implements IContact {
 			File mails = new File(defFolders, "mailsfile.txt");
 			try {
 				mails.createNewFile();
+				if (folder.compareTo("Trash") == 0){
+					mails = new File(defFolders, "Trashfile.txt");
+					mails.createNewFile();
+				}
+				
 			} catch (IOException e) {
 				return false;
 			}
@@ -92,9 +98,9 @@ public class Contact implements IContact {
 		try {
 			FileWriter wrt = new FileWriter(contactinfo, true);
 			wrt.write(this.name + '\n' + this.email + '\n' + this.password + '\n');
-			for(String w : folders) {
+			/*for(String w : folders) {
 				wrt.write(w + '\n');
-			}
+			}*/
 			wrt.close();
 		} catch (IOException e) {
 			return false;
@@ -102,6 +108,39 @@ public class Contact implements IContact {
 		return true;
 	}
 
+	public String[] getData(String email) {
+		
+		String[] data = new String[3];
+		int linecounter=0;
+		try {
+			File myobj =new File("D:\\MailServerData\\" + email + "\\contactinfo.txt");
+			Scanner myreader= new Scanner(myobj);
+			while(myreader.hasNextLine()) {
+				String datapoint=myreader.nextLine();
+				if(linecounter<3) {
+					data[linecounter] = datapoint;
+				}
+				else {
+					break;
+				}
+				linecounter++;
+			}
 	
+			myreader.close();
+		} catch (FileNotFoundException e) {
+			
+		}
+		
+		return data;
+		
+	}
+
+	public static Boolean checkmail(String mail) {
+		String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+			if(!mail.matches(regex)){
+				return false;
+			}
+		return true;
+	}
 	
 }
