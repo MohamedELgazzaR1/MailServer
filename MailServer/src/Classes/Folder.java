@@ -38,6 +38,10 @@ public class Folder implements IFolder {
 						for (int j = 1; j < lines; j++) {
 							writedest.write(scan.nextLine() + '\n');
 						}
+					} else {
+						for (int j = 1; j < lines; j++) {
+							scan.nextLine();
+						}
 					}
 				} else {
 					writetemp.write(input + '\n');

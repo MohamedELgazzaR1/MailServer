@@ -9,10 +9,12 @@ import javax.swing.border.EmptyBorder;
 
 import Classes.App;
 import Classes.Contact;
+import Classes.Mail;
 
 import java.awt.Color;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.awt.event.ActionEvent;
 import java.awt.SystemColor;
 import javax.swing.JTextField;
@@ -198,6 +200,8 @@ public class Home extends JFrame {
 						//Contact.setVisible(true);
 						Contact user = new Contact();
 						String[] data = user.getData(InputEmail.getText());
+						File trash = new File("D:\\MailServerData\\" + InputEmail.getText() + "\\Trash");
+						Mail.deleteFromTrash(trash, null, true);
 						Contact.main(data);
 						frame.setVisible(false);
 

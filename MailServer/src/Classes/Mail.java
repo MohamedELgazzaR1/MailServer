@@ -64,11 +64,11 @@ public class Mail implements IMail{
 	public static Boolean deleteFromTrash(File trash, String target, Boolean auto) {
 		final long days30 = (long) 2.592e9;
 		File trashfile = new File(trash, "Trashfile.txt");
-		File temp = new File(trash, "temp.txt");
+		File temp2 = new File(trash, "temp2.txt");
 		Long currenttime = System.currentTimeMillis();
 		try {
 			Scanner scan = new Scanner(trashfile);
-			FileWriter writetemp = new FileWriter(temp, true);
+			FileWriter writetemp = new FileWriter(temp2, true);
 			while(scan.hasNext()) {
 				String input = scan.nextLine();
 				String[] arr = input.split(" ");
@@ -92,7 +92,7 @@ public class Mail implements IMail{
 			String P = trashfile.getAbsolutePath();
 			trashfile.delete();
 			File dump = new File(P);
-			temp.renameTo(dump);
+			temp2.renameTo(dump);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null,"System Files do not exist!","Error",JOptionPane.ERROR_MESSAGE);
 			return false;
@@ -102,85 +102,71 @@ public class Mail implements IMail{
 
 	@Override
 	public Boolean getDraft() {
-		// TODO Auto-generated method stub
 		return Draft;
 	}
 
 	@Override
 	public int getPriority() {
-		// TODO Auto-generated method stub
 		return prior;
 	}
 
 	@Override
 	public IQueue getMails() {
-		// TODO Auto-generated method stub
 		return mails;
 	}
 
 	@Override
 	public String getSubject() {
-		// TODO Auto-generated method stub
 		return subject;
 	}
 
 	@Override
 	public ILinkedList getfiles() {
-		// TODO Auto-generated method stub
 		return files;
 	}
 
 	@Override
 	public String getBody() {
-		// TODO Auto-generated method stub
 		return body;
 	}
 
 	@Override
 	public String getCurrentMail() {
-		// TODO Auto-generated method stub
 		return currentmail;
 	}
 
 	@Override
 	public void setDraft(Boolean Draft) {
-		// TODO Auto-generated method stub
 		this.Draft = Draft;
 	}
 
 	@Override
 	public void setPriority(int prior) {
-		// TODO Auto-generated method stub
 		this.prior = prior;
 	}
 
 	@Override
 	public void setMails(IQueue mails) {
-		// TODO Auto-generated method stub
 		this.mails = mails;
 	}
 
 	@Override
 	public void setSubject(String subject) {
-		// TODO Auto-generated method stub
 		this.subject = subject;
 	}
 
 	@Override
 	public void setfiles(ILinkedList files) {
-		// TODO Auto-generated method stub
 		this.files = files;
 	}
 
 	@Override
 	public void setBody(String body) {
-		// TODO Auto-generated method stub
 		this.body = body;
 	}
 
 	@Override
 	public void setCurrentMail(String currentmail) {
-		// TODO Auto-generated method stub
 		this.currentmail = currentmail;
 	}
 }
