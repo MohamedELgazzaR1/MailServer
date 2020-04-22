@@ -3,10 +3,10 @@ package Classes;
 import classes.Stack;
 
 public class Filter {
-	public static int compare(String X, String Y) {
-		int out;
+	public static long compare(String X, String Y) {
+		long out;
 		try {
-			out = Integer.parseInt(X) - Integer.parseInt(Y);
+			out = Long.parseLong(X) - Long.parseLong(Y);
 		}catch(Exception e) {
 			out = X.compareTo(Y);
 		}
