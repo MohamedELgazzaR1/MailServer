@@ -79,11 +79,11 @@ public class Mail implements IMail{
 						Folder.deleteFolder(d);
 						Folder.deleteData(m, arr[1], lines, false, null);
 					} else {
-						writetemp.write(input);
+						writetemp.write(input + '\n');
 					}
 				} else {
 					if (arr[1].compareTo(target) != 0) {
-						writetemp.write(input);
+						writetemp.write(input + '\n');
 					}
 				}
 			}

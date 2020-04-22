@@ -196,7 +196,7 @@ public class App implements IApp{
 				String tim = Long.toString(t);
 				try {
 					FileWriter trashfilewriter = new FileWriter(trashtime, true);
-					trashfilewriter.write(tim + ' ' + src.getName());
+					trashfilewriter.write(tim + ' ' + src.getName() + '\n');
 					trashfilewriter.close();
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null,"System Files do not exist!","Error",JOptionPane.ERROR_MESSAGE);
