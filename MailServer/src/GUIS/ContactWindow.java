@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 
 import Classes.Contact;
 import Classes.Folder;
+import Classes.Mail;
 import classes.SinglyLinkedList;
 import interfaces.ILinkedList;
 
@@ -81,6 +82,9 @@ public class ContactWindow extends JFrame {
 		currentUser.setemail(args[1]);
 		currentUser.setpassword(args[2]);
 		currentUser.setrepassword(args[2]);
+		
+		File trash = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Trash");
+		Mail.deleteFromTrash(trash, null, true);
 		//Load folders
 		File mailFolder = new File ("D:\\MailServerData\\" + currentUser.getemail());
 		String[] files = mailFolder.list();
@@ -303,7 +307,7 @@ public class ContactWindow extends JFrame {
 				user[0] = currentUser.getname();
 				user[1] = currentUser.getemail();
 				user[2] = currentUser.getpassword();
-				user[3] =currentUser.getrepassword() ;
+				user[3] =currentUser.getrepassword();
 				ContactWindow.main(user);
 			}
 		});
