@@ -4,11 +4,6 @@ import classes.Stack;
 
 public class Filter {
 	
-	public static void main(String[] args) {
-		String[] arr = {"a", "b", "c"};
-		System.out.println(binarySearch(arr,"d"));
-	}
-	
 	public static long compare(String X, String Y) {
 		long out;
 		try {
