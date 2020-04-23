@@ -3,6 +3,12 @@ package Classes;
 import classes.Stack;
 
 public class Filter {
+	
+	public static void main(String[] args) {
+		String[] arr = {"a", "b", "c"};
+		System.out.println(binarySearch(arr,"d"));
+	}
+	
 	public static long compare(String X, String Y) {
 		long out;
 		try {
@@ -15,33 +21,25 @@ public class Filter {
 
 	public static int binarySearch(String [] data,String Target) {
 	
-	int start=0;
-	int end=data.length;
-	int mid=(start+end)/2;
-	Stack search=new Stack();
-	search.push(end);
-	search.push(mid);
-	search.push(start);
-	while(start<=end) {
-		start=(int)search.pop();
-		mid=(int)search.pop();
-		end=(int)search.pop();
-		if(compare(Target,data[mid]) > 0) {
-			start=mid;
-			mid=(mid+end)/2;
+		int start=0;
+		int end=data.length - 1;
+		Stack search=new Stack();
+		search.push(end);
+		search.push(start);
+		while(start<=end) {
+			start=(int)search.pop();
+			end=(int)search.pop();
+			int mid=start+ (end - 1)/2;
+			if(compare(Target,data[mid]) > 0) {
+				start=mid + 1;
+			}else if(compare(Target,data[mid]) < 0) {
+				end=mid - 1;
+			}else {
+				return mid;
+			}
 			search.push(end);
-			search.push(mid);
 			search.push(start);
-		}else if(compare(Target,data[mid]) < 0) {
-			end=mid;
-			mid=(start+mid)/2;
-			search.push(end);
-			search.push(mid);
-			search.push(start);
-		}else {
-			return mid;
 		}
-	}
-	return -1;
+		return -1;
 	}
 }
