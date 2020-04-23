@@ -22,7 +22,7 @@ public class Filter {
 	search.push(end);
 	search.push(mid);
 	search.push(start);
-	while(start<end-1) {
+	while(start<=end) {
 		start=(int)search.pop();
 		mid=(int)search.pop();
 		end=(int)search.pop();

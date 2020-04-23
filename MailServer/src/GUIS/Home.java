@@ -96,8 +96,7 @@ public class Home extends JFrame {
 	
 				}
 				else {
-					String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-				    if(!upemail.getText().matches(regex)) {
+				    if(!Mail.checkmail(upemail.getText())) {
 				   	  JOptionPane.showMessageDialog(null,"Invalid Email format.","Error",JOptionPane.ERROR_MESSAGE);
 				    } 
 				    else {
@@ -180,11 +179,11 @@ public class Home extends JFrame {
 		JButton signin = new JButton("Sign In");
 		signin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+
 				if(InputEmail.getText().isBlank()) {
 					JOptionPane.showMessageDialog(null,"Please fill Email field!","Error",JOptionPane.ERROR_MESSAGE);
 				}
-				else if(!InputEmail.getText().matches(regex)){
+				else if(!Mail.checkmail(InputEmail.getText())){
 				   	  JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
 				}
 				else if(inputPassword.getText().isBlank()) {

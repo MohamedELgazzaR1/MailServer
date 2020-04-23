@@ -30,6 +30,81 @@ public class Mail implements IMail{
 		return lines;
 	}
 	
+	public static Boolean checkmail(String mail) {
+		String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+			if(!mail.matches(regex)){
+				return false;
+			}
+		return true;
+	}
+	
+	public static int choosePriorty(String prio) {
+		if (prio.compareTo("Normal") == 0) {
+			return 3;
+		} else if (prio.compareTo("Very High") == 0) {
+			return 1;
+		} else if (prio.compareTo("High") == 0) {
+			return 2;
+		} else if (prio.compareTo("Low") == 0) {
+			return 4;
+		} else {
+			return 5;
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public IQueue checkEmailList(String toFieldInput) {
+		File existmails = new File("D:\\MailServerData");
+		String[] existMails = existmails.list();
+		Sort.quickSort(existMails);
+		IQueue emailList = new LinkedBased();
+		String hold = "";
+		for (int i = 0; i < toFieldInput.length(); i++) {
+			if (toFieldInput.charAt(i) != ',') {
+				hold += toFieldInput.charAt(i);
+			}
+			else {
+				if (i==0) {
+					JOptionPane.showMessageDialog(null,"Invalid format for list of recipients!","Error",JOptionPane.ERROR_MESSAGE);
+					return null;
+				}
+				else {
+					if (!checkmail(hold)) {
+						JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
+						return null;
+					} else {
+						if (Filter.binarySearch(existMails, hold) == -1) {
+							JOptionPane.showMessageDialog(null, hold + " does not exist!","Error",JOptionPane.ERROR_MESSAGE);
+							return null;
+						}
+						emailList.enqueue(hold);
+						hold = "";
+					}
+				}
+			}
+		}
+		if (!hold.isBlank()) {
+			if (!checkmail(hold)) {
+				JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
+				return null;
+			} else {
+				if (Filter.binarySearch(existMails, hold) == -1) {
+					JOptionPane.showMessageDialog(null, hold + " does not exist!","Error",JOptionPane.ERROR_MESSAGE);
+					return null;
+				}
+				emailList.enqueue(hold);
+				hold = "";
+			}
+		}
+		if (emailList.size() == 0) {
+			JOptionPane.showMessageDialog(null,"Recivers' Email lines line is empty.","Error",JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
+		return emailList;
+	}
+	
 	/**
 	 * 
 	 * @param file

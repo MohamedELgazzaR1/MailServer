@@ -160,65 +160,30 @@ public class ComposeMessage extends JFrame{
 		sendBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				IMail cmps = new Mail();
+				cmps.setCurrentMail(currentEmail);
+				cmps.setfiles(attaches);
+				cmps.setDraft(false);
 					// Get list of recipients
-					IQueue emailList = new LinkedBased();
 					String toFieldInput = toField.getText();
-					String hold = "";
-					for (int i = 0; i < toFieldInput.length(); i++) {
-						if (toFieldInput.charAt(i) != ',') {
-							hold += toFieldInput.charAt(i);
-						}
-						else {
-							if (i==0) {
-								JOptionPane.showMessageDialog(null,"Invalid format for list of recipients!","Error",JOptionPane.ERROR_MESSAGE);
-								return;
-							}
-							else {
-								if (!Contact.checkmail(hold)) {
-									JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-									return;
-								} else {
-									emailList.enqueue(hold);
-									hold = "";
-								}
-							}
-						}
-					}
-					if (!hold.isBlank()) {
-						if (!Contact.checkmail(hold)) {
-							JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-							return;
-						} else {
-							emailList.enqueue(hold);
-							hold = "";
-						}
-					}
-					if (emailList.size() == 0) {
-						JOptionPane.showMessageDialog(null,"Subject line is empty.","Error",JOptionPane.ERROR_MESSAGE);
+					IQueue emailList =  cmps.checkEmailList(toFieldInput);
+					if (emailList == null) {
 						return;
 					}
 					
 					// Prepare subject line and message contents
+					String prio = priority.getSelectedItem();
+					int out = Mail.choosePriorty(prio);
+					
 					cmps.setMails(emailList);
 					cmps.setSubject(subjectField.getText());
 					cmps.setBody(messageField.getText());
-					String prio = priority.getSelectedItem();
-					int out;
-					if (prio.compareTo("Normal") == 0) {
-					out = 3;
-					} else if (prio.compareTo("Very High") == 0) {
-						out = 1;
-					} else if (prio.compareTo("High") == 0) {
-						out = 2;
-					} else if (prio.compareTo("Low") == 0) {
-						out = 4;
-					} else {
-						out = 5;
-					}
 					cmps.setPriority(out);
-					cmps.setCurrentMail(currentEmail);
-					cmps.setfiles(attaches);
-					cmps.setDraft(false);
+					
+					if (cmps.getSubject().isBlank()) {
+						JOptionPane.showMessageDialog(null,"Cannot send an email without subject.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					
 					IApp C = new App();
 					if (C.compose(cmps)) {
 						JOptionPane.showMessageDialog(null,"Email sent successfully.","",JOptionPane.INFORMATION_MESSAGE);
@@ -278,64 +243,28 @@ public class ComposeMessage extends JFrame{
 		draftBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				IMail cmps = new Mail();
+				cmps.setCurrentMail(currentEmail);
+				cmps.setfiles(attaches);
+				cmps.setDraft(true);
 					// Get list of recipients
-					IQueue emailList = new LinkedBased();
 					String toFieldInput = toField.getText();
-					String hold = "";
-					for (int i = 0; i < toFieldInput.length(); i++) {
-						if (toFieldInput.charAt(i) != ',') {
-							hold += toFieldInput.charAt(i);
-						}
-						else {
-							if (i==0) {
-								JOptionPane.showMessageDialog(null,"Invalid format for list of recipients!","Error",JOptionPane.ERROR_MESSAGE);
-								return;
-							}
-							else {
-								if (!Contact.checkmail(hold)) {
-									JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-									return;
-								} else {
-									emailList.enqueue(hold);
-									hold = "";
-								}
-							}
-						}
+					IQueue emailList =  cmps.checkEmailList(toFieldInput);
+					if (emailList == null) {
+						return;
 					}
-					if (!hold.isBlank()) {
-						if (!Contact.checkmail(hold)) {
-							JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-							return;
-						} else {
-							emailList.enqueue(hold);
-							hold = "";
-						}
-					}
-				
+					
 					// Prepare subject line and message contents
+					String prio = priority.getSelectedItem();
+					int out = Mail.choosePriorty(prio);
+					
 					cmps.setMails(emailList);
 					cmps.setSubject(subjectField.getText());
 					cmps.setBody(messageField.getText());
-					String prio = priority.getSelectedItem();
-					int out;
-					if (prio.compareTo("Normal") == 0) {
-						out = 3;
-					} else if (prio.compareTo("Very High") == 0) {
-						out = 1;
-					} else if (prio.compareTo("High") == 0) {
-						out = 2;
-					} else if (prio.compareTo("Low") == 0) {
-						out = 4;
-					} else {
-						out = 5;
-					}
 					cmps.setPriority(out);
-					cmps.setCurrentMail(currentEmail);
-					cmps.setfiles(attaches);
-					cmps.setDraft(true);
+					
 					//
-					if (emailList.size() == 0 && cmps.getSubject().isBlank() && cmps.getBody().isBlank() && attaches.size() == 0) {
-						JOptionPane.showMessageDialog(null,"Cannot save an email without any data.","Error",JOptionPane.ERROR_MESSAGE);
+					if (cmps.getSubject().isBlank()) {
+						JOptionPane.showMessageDialog(null,"Cannot save an email without Subject.","Error",JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 				

@@ -52,22 +52,6 @@ public class Contact implements IContact {
 	}
 	
 	
-	@Override
-	public String checkIn(String email, String password) {
-		return null;
-	}
-
-	@Override
-	public Boolean checkpassword() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Boolean checkemail() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Boolean newcontact(){
@@ -98,9 +82,6 @@ public class Contact implements IContact {
 		try {
 			FileWriter wrt = new FileWriter(contactinfo, true);
 			wrt.write(this.name + '\n' + this.email + '\n' + this.password + '\n');
-			/*for(String w : folders) {
-				wrt.write(w + '\n');
-			}*/
 			wrt.close();
 		} catch (IOException e) {
 			return false;
@@ -133,14 +114,6 @@ public class Contact implements IContact {
 		
 		return data;
 		
-	}
-
-	public static Boolean checkmail(String mail) {
-		String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-			if(!mail.matches(regex)){
-				return false;
-			}
-		return true;
 	}
 	
 }

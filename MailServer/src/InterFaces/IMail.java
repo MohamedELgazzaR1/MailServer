@@ -19,4 +19,6 @@ public interface IMail {
 	public void setfiles(ILinkedList files);
 	public void setBody(String body);
 	public void setCurrentMail(String currentmail);
+	
+	public IQueue checkEmailList(String toFieldInput);
 }
