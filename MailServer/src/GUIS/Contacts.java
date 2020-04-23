@@ -16,11 +16,13 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 public class Contacts extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private JButton btnAddContact;
 
 	/**
 	 * Launch the application.
@@ -50,32 +52,36 @@ public class Contacts extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JButton btnRemoveSelectedContact = new JButton("Remove Selected contact");
-		btnRemoveSelectedContact.addActionListener(new ActionListener() {
+		JButton btnRemoveContact = new JButton("Remove Selected Contact");
+		btnRemoveContact.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnRemoveSelectedContact.setBounds(238, 283, 194, 44);
-		contentPane.add(btnRemoveSelectedContact);
+		btnRemoveContact.setBounds(319, 204, 194, 44);
+		contentPane.add(btnRemoveContact);
 		
-		textField = new JTextField();
-		textField.setBounds(404, 121, 165, 43);
-		contentPane.add(textField);
-		textField.setColumns(10);
-		
-		JButton btnNewButton = new JButton("Add Contact");
-		btnNewButton.addActionListener(new ActionListener() {
+		btnAddContact = new JButton("Add Contact");
+		btnAddContact.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				ContactInfo.main(null);
 			}
 		});
-		btnNewButton.setBounds(416, 64, 137, 44);
-		contentPane.add(btnNewButton);
+		btnAddContact.setBounds(351, 92, 137, 44);
+		contentPane.add(btnAddContact);
 		
 		JLabel lblNewLabel_1 = new JLabel("My Contacts");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 20));
 		lblNewLabel_1.setForeground(Color.WHITE);
-		lblNewLabel_1.setBounds(12, 13, 147, 43);
+		lblNewLabel_1.setBounds(49, 8, 147, 43);
 		contentPane.add(lblNewLabel_1);
+		
+		JScrollPane scrollPaneContactList = new JScrollPane();
+		scrollPaneContactList.setBounds(22, 62, 174, 265);
+		contentPane.add(scrollPaneContactList);
+		
+		JList contactList = new JList();
+		contactList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrollPaneContactList.setViewportView(contactList);
 		
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setIcon(new ImageIcon(Contacts.class.getResource("/Images/86c289b40b6ed48055a16ce9f168822c.jpg")));

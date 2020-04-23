@@ -4,23 +4,6 @@ import java.io.IOException;
 
 public interface IContact {
 	/*
-	 * check if the email and password are found in indexfile
-	 * 
-	 * open indexfile
-	 * loop until email and password are found
-	 * 	retrun email
-	 * return null
-	 */
-	public String checkIn(String email, String password);
-	/*
-	 * in registration check that password doesn't have space or the password and repassword are different
-	 */
-	public Boolean checkpassword();
-	/*
-	 * in registration check that email doesn't have space or it is already exists
-	 */
-	public Boolean checkemail();
-	/*
 	 * add contact after you check that the information is right and create folder to that email on the system
 	 * 
 	 * open the contacts file

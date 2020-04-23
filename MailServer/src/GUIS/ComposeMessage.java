@@ -16,6 +16,8 @@ import javax.swing.text.StyledDocument;
 import Classes.App;
 import Classes.Contact;
 import Classes.Mail;
+import InterFaces.IApp;
+import InterFaces.IMail;
 import classes.*;
 import interfaces.*;
 
@@ -36,6 +38,8 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JTextArea;
 import java.awt.Component;
+import java.awt.Desktop;
+
 import javax.swing.JTextField;
 import javax.swing.JFormattedTextField;
 
@@ -101,6 +105,30 @@ public class ComposeMessage extends JFrame{
 		contentPane.add(attachList);
 		
 		btnViewAttachment = new JButton("View Selected Attachment");
+		btnViewAttachment.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String selectedAttach = attachList.getSelectedItem();
+				if (selectedAttach!= null) {
+					for (int i = 1 ; i <= attaches.size(); i++) {
+						File attachment = (File)attaches.get(i);
+						String temp = attachment.getName();
+						if ( selectedAttach.compareTo(temp) == 0 ){
+							Desktop desktop = Desktop.getDesktop();  
+							if(attachment.exists())
+								try {
+									desktop.open(attachment);
+								} catch (IOException e1) {
+								}             
+							}  
+							break;
+						}
+					
+				}
+				else {
+					JOptionPane.showMessageDialog(null,"Attachment list is empty.","Error",JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
 		btnViewAttachment.setBounds(782, 113, 191, 42);
 		btnViewAttachment.setForeground(Color.WHITE);
 		btnViewAttachment.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 9));
@@ -157,63 +185,38 @@ public class ComposeMessage extends JFrame{
 		sendBtn.setForeground(Color.WHITE);
 		sendBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				IMail cmps = new Mail();
+				cmps.setCurrentMail(currentEmail);
+				cmps.setfiles(attaches);
+				cmps.setDraft(false);
 					// Get list of recipients
-					IQueue emailList = new LinkedBased();
 					String toFieldInput = toField.getText();
-					String hold = "";
-					for (int i = 0; i < toFieldInput.length(); i++) {
-						if (toFieldInput.charAt(i) != ',') {
-							hold += toFieldInput.charAt(i);
-						}
-						else {
-							if (i==0) {
-								JOptionPane.showMessageDialog(null,"Invalid format for list of recipients!","Error",JOptionPane.ERROR_MESSAGE);
-								return;
-							}
-							else {
-								if (!Contact.checkmail(hold)) {
-									JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-									return;
-								} else {
-									emailList.enqueue(hold);
-									hold = "";
-								}
-							}
-						}
-					}
-					if (!App.isBlankString(hold)) {
-						if (!Contact.checkmail(hold)) {
-							JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-							return;
-						} else {
-							emailList.enqueue(hold);
-							hold = "";
-						}
-					}
-					if (emailList.size() == 0) {
-						JOptionPane.showMessageDialog(null,"Subject line is empty.","Error",JOptionPane.ERROR_MESSAGE);
+					IQueue emailList =  cmps.checkEmailList(toFieldInput);
+					if (emailList == null) {
 						return;
 					}
+					
 					// Prepare subject line and message contents
-					String subject = subjectField.getText();
-					String message = messageField.getText();
 					String prio = priority.getSelectedItem();
-					int out;
-					if (prio.compareTo("Normal") == 0) {
-					out = 3;
-					} else if (prio.compareTo("Very High") == 0) {
-						out = 1;
-					} else if (prio.compareTo("High") == 0) {
-						out = 2;
-					} else if (prio.compareTo("Low") == 0) {
-						out = 4;
-					} else {
-						out = 5;
+					int out = Mail.choosePriorty(prio);
+					
+					cmps.setMails(emailList);
+					cmps.setSubject(subjectField.getText());
+					cmps.setBody(messageField.getText());
+					cmps.setPriority(out);
+					
+					if (cmps.getSubject().isBlank()) {
+						JOptionPane.showMessageDialog(null,"Cannot send an email without subject.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
 					}
-				
-					Mail.newEmail(false, out, emailList, subject , attaches, message, currentEmail);
-					JOptionPane.showMessageDialog(null,"Email sent successfully.","",JOptionPane.INFORMATION_MESSAGE);
+					
+					IApp C = new App();
+					if (C.compose(cmps)) {
+						JOptionPane.showMessageDialog(null,"Email sent successfully.","",JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null,"Email could not be sent!","Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					dispose();
 				}
 			
@@ -265,66 +268,39 @@ public class ComposeMessage extends JFrame{
 		draftBtn.setForeground(Color.WHITE);
 		draftBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				IMail cmps = new Mail();
+				cmps.setCurrentMail(currentEmail);
+				cmps.setfiles(attaches);
+				cmps.setDraft(true);
 					// Get list of recipients
-					IQueue emailList = new LinkedBased();
 					String toFieldInput = toField.getText();
-					String hold = "";
-					for (int i = 0; i < toFieldInput.length(); i++) {
-						if (toFieldInput.charAt(i) != ',') {
-							hold += toFieldInput.charAt(i);
-						}
-						else {
-							if (i==0) {
-								JOptionPane.showMessageDialog(null,"Invalid format for list of recipients!","Error",JOptionPane.ERROR_MESSAGE);
-								return;
-							}
-							else {
-								if (!Contact.checkmail(hold)) {
-									JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-									return;
-								} else {
-									emailList.enqueue(hold);
-									hold = "";
-								}
-							}
-						}
-					}
-					if (!App.isBlankString(hold)) {
-						if (!Contact.checkmail(hold)) {
-							JOptionPane.showMessageDialog(null,"Invalid Email format!","Error",JOptionPane.ERROR_MESSAGE);
-							return;
-						} else {
-							emailList.enqueue(hold);
-							hold = "";
-						}
-					}
-				
-					// Prepare subject line and message contents
-					String subject = subjectField.getText();
-					String message = messageField.getText();
-					String prio = priority.getSelectedItem();
-					int out;
-					if (prio.compareTo("Normal") == 0) {
-						out = 3;
-					} else if (prio.compareTo("Very High") == 0) {
-						out = 1;
-					} else if (prio.compareTo("High") == 0) {
-						out = 2;
-					} else if (prio.compareTo("Low") == 0) {
-						out = 4;
-					} else {
-						out = 5;
+					IQueue emailList =  cmps.checkEmailList(toFieldInput);
+					if (emailList == null) {
+						return;
 					}
 					
+					// Prepare subject line and message contents
+					String prio = priority.getSelectedItem();
+					int out = Mail.choosePriorty(prio);
+					
+					cmps.setMails(emailList);
+					cmps.setSubject(subjectField.getText());
+					cmps.setBody(messageField.getText());
+					cmps.setPriority(out);
+					
 					//
-					if (emailList.size() == 0 && subject.isBlank() && message.isBlank() && attaches.size() == 0) {
-						JOptionPane.showMessageDialog(null,"Cannot save an email without any data.","Error",JOptionPane.ERROR_MESSAGE);
+					if (cmps.getSubject().isBlank()) {
+						JOptionPane.showMessageDialog(null,"Cannot save an email without Subject.","Error",JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 				
-					Mail.newEmail(true, out, emailList, subject , attaches, message, currentEmail);
-					JOptionPane.showMessageDialog(null,"Email saved successfully.","",JOptionPane.INFORMATION_MESSAGE);
+					IApp C = new App();
+					if (C.compose(cmps)) {
+						JOptionPane.showMessageDialog(null,"Email saved successfully.","",JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null,"Email could not be saved!","Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					dispose();
 				}
 			
@@ -335,11 +311,12 @@ public class ComposeMessage extends JFrame{
 		
 		priority = new Choice();
 		priority.setBounds(134, 130, 136, 20);
-		priority.add("Normal");
 		priority.add("Very High");
 		priority.add("High");
+		priority.add("Normal");
 		priority.add("Low");
 		priority.add("Very Low");
+		priority.select("Normal");
 		contentPane.add(priority);
 		
 		priorityLbl = new JLabel("Priority");

@@ -34,13 +34,17 @@ public class Folder implements IFolder {
 				String input = scan.nextLine();
 				if(input.compareTo(deleteitem) == 0) {
 					if (destBool) {
-						writedest.write(input);
+						writedest.write(input + '\n');
 						for (int j = 1; j < lines; j++) {
-							writedest.write(scan.nextLine());
+							writedest.write(scan.nextLine() + '\n');
+						}
+					} else {
+						for (int j = 1; j < lines; j++) {
+							scan.nextLine();
 						}
 					}
 				} else {
-					writetemp.write(input);
+					writetemp.write(input + '\n');
 				}
 			}
 			scan.close();
