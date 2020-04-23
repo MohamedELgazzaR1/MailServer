@@ -38,6 +38,8 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JTextArea;
 import java.awt.Component;
+import java.awt.Desktop;
+
 import javax.swing.JTextField;
 import javax.swing.JFormattedTextField;
 
@@ -103,6 +105,30 @@ public class ComposeMessage extends JFrame{
 		contentPane.add(attachList);
 		
 		btnViewAttachment = new JButton("View Selected Attachment");
+		btnViewAttachment.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String selectedAttach = attachList.getSelectedItem();
+				if (selectedAttach!= null) {
+					for (int i = 1 ; i <= attaches.size(); i++) {
+						File attachment = (File)attaches.get(i);
+						String temp = attachment.getName();
+						if ( selectedAttach.compareTo(temp) == 0 ){
+							Desktop desktop = Desktop.getDesktop();  
+							if(attachment.exists())
+								try {
+									desktop.open(attachment);
+								} catch (IOException e1) {
+								}             
+							}  
+							break;
+						}
+					
+				}
+				else {
+					JOptionPane.showMessageDialog(null,"Attachment list is empty.","Error",JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
 		btnViewAttachment.setBounds(782, 113, 191, 42);
 		btnViewAttachment.setForeground(Color.WHITE);
 		btnViewAttachment.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 9));
@@ -285,11 +311,12 @@ public class ComposeMessage extends JFrame{
 		
 		priority = new Choice();
 		priority.setBounds(134, 130, 136, 20);
-		priority.add("Normal");
 		priority.add("Very High");
 		priority.add("High");
+		priority.add("Normal");
 		priority.add("Low");
 		priority.add("Very Low");
+		priority.select("Normal");
 		contentPane.add(priority);
 		
 		priorityLbl = new JLabel("Priority");

@@ -89,7 +89,7 @@ public class Contact implements IContact {
 		return true;
 	}
 
-	public String[] getData(String email) {
+	public static String[] getData(String email) {
 		
 		String[] data = new String[3];
 		int linecounter=0;

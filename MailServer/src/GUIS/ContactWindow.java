@@ -60,6 +60,7 @@ public class ContactWindow extends JFrame {
 	private JLabel bgImage;
 	private JLabel lblSort;
 	private static ILinkedList folderList = new SinglyLinkedList();
+	private JButton btnRenameFolder;
 	
 
 	/**
@@ -134,6 +135,10 @@ public class ContactWindow extends JFrame {
 				boolean acceptableFolder = true;
 				String folderName = addFolderTxt.getText();
 				int folderNum = folderSelect.countItems();
+				if(folderName.isBlank()) {
+					JOptionPane.showMessageDialog(null,"The folder name field is blank.","Error",JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				for (int i = 0 ; i < folderNum ; i++) {
 					String folder = folderSelect.getItem(i);
 					if (folderName.compareTo(folder)==0) {
@@ -162,7 +167,7 @@ public class ContactWindow extends JFrame {
 		btnAddFolder.setForeground(Color.WHITE);
 		btnAddFolder.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnAddFolder.setBackground(SystemColor.textHighlight);
-		btnAddFolder.setBounds(31, 355, 144, 42);
+		btnAddFolder.setBounds(30, 303, 144, 42);
 		contentPane.add(btnAddFolder);
 		
 		lblFolderName = new JLabel("Folder Name");
@@ -204,7 +209,7 @@ public class ContactWindow extends JFrame {
 		
 		panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
-		panel_1.setBounds(256, 205, 711, 315);
+		panel_1.setBounds(256, 193, 711, 327);
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
@@ -212,18 +217,15 @@ public class ContactWindow extends JFrame {
 		composeBtn.setForeground(Color.WHITE);
 		composeBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				ComposeMessage compose = new ComposeMessage();
 				String[] currentEmail = new String[1];
 				currentEmail[0] = currentUser.getemail();
-				compose.main(currentEmail);
-				//compose.setVisible(true);
+				ComposeMessage.main(currentEmail);
 				
 			}
 		});
 		composeBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		composeBtn.setBackground(SystemColor.textHighlight);
-		composeBtn.setBounds(31, 300, 144, 42);
+		composeBtn.setBounds(30, 248, 144, 42);
 		contentPane.add(composeBtn);
 		
 		nextBtn = new JButton("Next Page");
@@ -314,13 +316,12 @@ public class ContactWindow extends JFrame {
 		contactBtn = new JButton("Contacts");
 		contactBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Contacts contacts=new Contacts();
-				contacts.setVisible(true);
+				Contacts.main(null);
 				
 			}
 		});
 		contactBtn.setForeground(Color.WHITE);
-		contactBtn.setBounds(31, 245, 144, 42);
+		contactBtn.setBounds(30, 193, 144, 42);
 		contentPane.add(contactBtn);
 		contactBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		contactBtn.setBackground(SystemColor.textHighlight);
@@ -345,8 +346,6 @@ public class ContactWindow extends JFrame {
 						folderSelect.remove(selectedFolder);
 						File deleted = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\" + selectedFolder);
 						Folder.deleteFolder(deleted);
-						//Directory not deleted
-						deleted.delete();
 					}
 					
 				}
@@ -357,6 +356,52 @@ public class ContactWindow extends JFrame {
 		btnDeleteSelectedFolder.setBackground(SystemColor.textHighlight);
 		btnDeleteSelectedFolder.setBounds(31, 519, 218, 42);
 		contentPane.add(btnDeleteSelectedFolder);
+		
+		btnRenameFolder = new JButton("Rename Selected Folder");
+		btnRenameFolder.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				boolean acceptableFolder = true;
+				String folderName = addFolderTxt.getText();
+				String selectedFolder = folderSelect.getSelectedItem();
+				if(folderName.isBlank()) {
+					JOptionPane.showMessageDialog(null,"The folder name field is blank.","Error",JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if (selectedFolder.compareTo("Inbox")==0 || selectedFolder.compareTo("Draft")==0  || selectedFolder.compareTo("Sent")==0 || selectedFolder.compareTo("Trash")==0) {
+					JOptionPane.showMessageDialog(null,"Cannot rename the essential folder \""+selectedFolder+"\".","Error",JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					int folderNum = folderSelect.countItems();
+					for (int i = 0 ; i < folderNum ; i++) {
+						String folder = folderSelect.getItem(i);
+						if (folderName.compareTo(folder)==0) {
+							JOptionPane.showMessageDialog(null,"The specified folder name already exists.","Error",JOptionPane.ERROR_MESSAGE);
+							acceptableFolder = false;
+							break;
+						}
+					}
+					if (acceptableFolder == true) {
+						int dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to rename the selected folder\""+selectedFolder+"\" to\""+folderName+"\"?","Confirmation",JOptionPane.YES_NO_OPTION);
+								if(dialogResult == JOptionPane.YES_OPTION) {
+									int index = folderSelect.getSelectedIndex();
+									folderSelect.remove(index);
+									folderSelect.insert(folderName, index);
+									File old = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\" + selectedFolder);
+									File renamed = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\" + folderName);
+									old.renameTo(renamed);
+								}
+					}
+				}
+			}
+				
+
+		});
+		btnRenameFolder.setForeground(Color.WHITE);
+		btnRenameFolder.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+		btnRenameFolder.setBackground(SystemColor.textHighlight);
+		btnRenameFolder.setBounds(30, 356, 194, 42);
+		contentPane.add(btnRenameFolder);
 		
 		bgImage = new JLabel("");
 		bgImage.setIcon(new ImageIcon(ContactWindow.class.getResource("/Images/opening-email-ss-1920.jpg")));

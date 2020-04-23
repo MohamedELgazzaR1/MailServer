@@ -99,7 +99,7 @@ public class Mail implements IMail{
 			}
 		}
 		if (emailList.size() == 0) {
-			JOptionPane.showMessageDialog(null,"Recivers' Email lines line is empty.","Error",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,"Recipients line is empty.","Error",JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 		return emailList;
