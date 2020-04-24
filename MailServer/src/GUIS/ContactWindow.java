@@ -10,19 +10,26 @@ import javax.swing.border.EmptyBorder;
 
 import Classes.Contact;
 import Classes.Folder;
+import Classes.IndexMail;
 import Classes.Mail;
+import classes.DList;
 import classes.SinglyLinkedList;
 import interfaces.ILinkedList;
 
 import java.awt.Color;
 import javax.swing.UIManager;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
 import javax.swing.JLabel;
@@ -34,11 +41,12 @@ import javax.swing.JTextField;
 import java.awt.Choice;
 import javax.swing.JToggleButton;
 import java.awt.SystemColor;
+import javax.swing.JList;
 
 public class ContactWindow extends JFrame {
 
 	private JPanel contentPane;
-	private JPanel panel_1;
+	private JPanel panelShowEmails;
 	private JButton composeBtn;
 	private JButton nextBtn;
 	private JButton prevBtn;
@@ -62,6 +70,10 @@ public class ContactWindow extends JFrame {
 	private JLabel lblSort;
 	private static ILinkedList folderList = new SinglyLinkedList();
 	private JButton btnRenameFolder;
+	private static DefaultListModel modelShowEmail;
+	private JList listEmail;
+	private static ILinkedList folderIndex = new DList();
+	private static String loadedFolder;
 	
 
 	/**
@@ -82,7 +94,9 @@ public class ContactWindow extends JFrame {
 		currentUser.setemail(args[1]);
 		currentUser.setpassword(args[2]);
 		currentUser.setrepassword(args[2]);
-		
+		loadedFolder = args[3];
+		folderList.clear();
+		//Delete trash after 30 days after logging in
 		File trash = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Trash");
 		Mail.deleteFromTrash(trash, null, true);
 		//Load folders
@@ -117,6 +131,33 @@ public class ContactWindow extends JFrame {
 					break;
 				}
 			}
+		}
+		//Load Emails for the Inbox (default selection)
+		folderIndex = new DList();
+		File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\"+ loadedFolder);
+		File currentIndex = new File(currentFile , "mailsfile.txt");
+		
+		Scanner myreader;
+		
+		try {	
+			myreader = new Scanner(currentIndex);
+			while(myreader.hasNextLine()) {
+				String data=myreader.nextLine();
+				if (data.isBlank()) {
+					break;
+				}
+				IndexMail load = new IndexMail();
+				load.setMailName(data);
+				load.setPriority(Integer.parseInt(myreader.nextLine()));
+				load.setFrom(myreader.nextLine());
+				load.setTo(myreader.nextLine());
+				load.setSubject(myreader.nextLine());
+				folderIndex.add(load);		
+			}
+			myreader.close();
+		}		
+		catch (FileNotFoundException eee) {
+		
 		}
 		
 	}
@@ -171,7 +212,7 @@ public class ContactWindow extends JFrame {
 		btnAddFolder.setForeground(Color.WHITE);
 		btnAddFolder.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnAddFolder.setBackground(SystemColor.textHighlight);
-		btnAddFolder.setBounds(30, 303, 144, 42);
+		btnAddFolder.setBounds(30, 273, 144, 42);
 		contentPane.add(btnAddFolder);
 		
 		lblFolderName = new JLabel("Folder Name");
@@ -179,12 +220,12 @@ public class ContactWindow extends JFrame {
 		lblFolderName.setForeground(Color.WHITE);
 		lblFolderName.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblFolderName.setBackground(Color.WHITE);
-		lblFolderName.setBounds(12, 412, 83, 31);
+		lblFolderName.setBounds(12, 343, 83, 31);
 		contentPane.add(lblFolderName);
 		
 		addFolderTxt = new JTextField();
 		addFolderTxt.setColumns(10);
-		addFolderTxt.setBounds(104, 410, 145, 33);
+		addFolderTxt.setBounds(104, 342, 145, 33);
 		contentPane.add(addFolderTxt);
 		
 		lblSelectFolder = new JLabel("Select Folder");
@@ -192,16 +233,54 @@ public class ContactWindow extends JFrame {
 		lblSelectFolder.setForeground(Color.WHITE);
 		lblSelectFolder.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblSelectFolder.setBackground(Color.WHITE);
-		lblSelectFolder.setBounds(12, 456, 113, 23);
+		lblSelectFolder.setBounds(62, 497, 113, 23);
 		contentPane.add(lblSelectFolder);
 		
 		folderSelect = new Choice();
-		folderSelect.setBounds(30, 485, 219, 40);
+		folderSelect.setBounds(30, 526, 219, 40);
 		contentPane.add(folderSelect);
 		
 		for (int i = 1; i <= folderList.size() ; i++) {
 			folderSelect.add((String)folderList.get(i));
 		}
+		folderSelect.select(loadedFolder);
+		folderSelect.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				modelShowEmail.clear();
+				folderIndex = new DList();
+				loadedFolder = folderSelect.getSelectedItem();
+				File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\"+ loadedFolder);
+				File currentIndex = new File(currentFile , "mailsfile.txt");
+				
+				Scanner myreader;
+				
+				try {	
+					myreader = new Scanner(currentIndex);
+					while(myreader.hasNextLine()) {
+						String data=myreader.nextLine();
+						if (data.isBlank()) {
+							break;
+						}
+						IndexMail load = new IndexMail();
+						load.setMailName(data);
+						load.setPriority(Integer.parseInt(myreader.nextLine()));
+						load.setFrom(myreader.nextLine());
+						load.setTo(myreader.nextLine());
+						load.setSubject(myreader.nextLine());
+						folderIndex.add(load);		
+					}
+					myreader.close();
+				}		
+				catch (FileNotFoundException ee) {
+				
+				}
+				for (int i = 0 ; i < folderIndex.size() ; i++) {
+					String add = ((IndexMail) folderIndex.get(i)).getPriority() + "   " + ((IndexMail) folderIndex.get(i)).getFrom() + "   " + ((IndexMail) folderIndex.get(i)).getTo() + "   " + ((IndexMail) folderIndex.get(i)).getSubject();
+					modelShowEmail.add(i, add );
+				}
+				
+					
+			}});
 		
 		Username = new JLabel("Username");
 		Username.setHorizontalAlignment(SwingConstants.LEFT);
@@ -211,11 +290,22 @@ public class ContactWindow extends JFrame {
 		Username.setBounds(12, 16, 121, 23);
 		contentPane.add(Username);
 		
-		panel_1 = new JPanel();
-		panel_1.setBackground(Color.WHITE);
-		panel_1.setBounds(256, 193, 711, 327);
-		contentPane.add(panel_1);
-		panel_1.setLayout(null);
+		panelShowEmails = new JPanel();
+		panelShowEmails.setBackground(Color.WHITE);
+		panelShowEmails.setBounds(306, 163, 620, 357);
+		contentPane.add(panelShowEmails);
+		panelShowEmails.setLayout(null);
+		
+		//Show emails here by modelShowEmail.add()
+		modelShowEmail = new DefaultListModel();
+	    listEmail = new JList(modelShowEmail);
+		listEmail.setBounds(0, 0, 620, 357);
+		listEmail.setFont(new Font("Tahoma",Font.BOLD, 15));
+		for (int i = 0 ; i < folderIndex.size() ; i++) {
+			String add = ((IndexMail) folderIndex.get(i)).getPriority() + "   " + ((IndexMail) folderIndex.get(i)).getFrom() + "   " + ((IndexMail) folderIndex.get(i)).getTo() + "   " + ((IndexMail) folderIndex.get(i)).getSubject();
+			modelShowEmail.add(i, add );
+		}
+		panelShowEmails.add(listEmail);
 		
 		composeBtn = new JButton("New Message");
 		composeBtn.setForeground(Color.WHITE);
@@ -227,9 +317,9 @@ public class ContactWindow extends JFrame {
 				
 			}
 		});
-		composeBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+		composeBtn.setFont(new Font("Tahoma", Font.BOLD, 12));
 		composeBtn.setBackground(SystemColor.textHighlight);
-		composeBtn.setBounds(30, 248, 144, 42);
+		composeBtn.setBounds(30, 218, 144, 42);
 		contentPane.add(composeBtn);
 		
 		nextBtn = new JButton("Next Page");
@@ -242,7 +332,7 @@ public class ContactWindow extends JFrame {
 			}
 		});
 		nextBtn.setBackground(SystemColor.textHighlight);
-		nextBtn.setBounds(731, 538, 131, 23);
+		nextBtn.setBounds(852, 542, 131, 23);
 		contentPane.add(nextBtn);
 		
 		prevBtn = new JButton("Previous Page");
@@ -260,14 +350,14 @@ public class ContactWindow extends JFrame {
 			}
 		});
 		prevBtn.setBackground(SystemColor.textHighlight);
-		prevBtn.setBounds(292, 538, 131, 23);
+		prevBtn.setBounds(267, 542, 131, 23);
 		contentPane.add(prevBtn);
 		
 		pageLbl = new JLabel("Current Page: " + currentPage);
 		pageLbl.setForeground(Color.WHITE);
 		pageLbl.setFont(new Font("Tahoma", Font.BOLD, 16));
 		pageLbl.setBackground(Color.WHITE);
-		pageLbl.setBounds(507, 537, 154, 23);
+		pageLbl.setBounds(548, 542, 154, 23);
 		contentPane.add(pageLbl);
 		
 		lblSearch = new JLabel("Search");
@@ -307,7 +397,8 @@ public class ContactWindow extends JFrame {
 				user[0] = currentUser.getname();
 				user[1] = currentUser.getemail();
 				user[2] = currentUser.getpassword();
-				user[3] =currentUser.getrepassword();
+				user[3] = loadedFolder;
+				modelShowEmail.clear();
 				ContactWindow.main(user);
 			}
 		});
@@ -325,7 +416,7 @@ public class ContactWindow extends JFrame {
 			}
 		});
 		contactBtn.setForeground(Color.WHITE);
-		contactBtn.setBounds(30, 193, 144, 42);
+		contactBtn.setBounds(30, 163, 144, 42);
 		contentPane.add(contactBtn);
 		contactBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		contactBtn.setBackground(SystemColor.textHighlight);
@@ -358,7 +449,7 @@ public class ContactWindow extends JFrame {
 		btnDeleteSelectedFolder.setForeground(Color.WHITE);
 		btnDeleteSelectedFolder.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnDeleteSelectedFolder.setBackground(SystemColor.textHighlight);
-		btnDeleteSelectedFolder.setBounds(31, 519, 218, 42);
+		btnDeleteSelectedFolder.setBounds(12, 444, 218, 42);
 		contentPane.add(btnDeleteSelectedFolder);
 		
 		btnRenameFolder = new JButton("Rename Selected Folder");
@@ -404,7 +495,7 @@ public class ContactWindow extends JFrame {
 		btnRenameFolder.setForeground(Color.WHITE);
 		btnRenameFolder.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnRenameFolder.setBackground(SystemColor.textHighlight);
-		btnRenameFolder.setBounds(30, 356, 194, 42);
+		btnRenameFolder.setBounds(12, 385, 219, 42);
 		contentPane.add(btnRenameFolder);
 		
 		bgImage = new JLabel("");
