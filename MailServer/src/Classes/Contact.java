@@ -74,7 +74,9 @@ public class Contact implements IContact {
 			}
 		}
 		File contactinfo = new File(mailfolder, "contactinfo.txt");
+		File contacts = new File(mailfolder, "contacts.txt");
 		try {
+			contacts.createNewFile();
 			contactinfo.createNewFile();
 		} catch (IOException e) {
 			return false;

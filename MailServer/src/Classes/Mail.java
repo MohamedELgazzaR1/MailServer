@@ -114,12 +114,6 @@ public class Mail implements IMail{
 		file.mkdir();
 		File files = new File(file, "Attachments");
 		files.mkdir();
-		files = new File (file, "body.txt");
-		try {
-			files.createNewFile();
-		} catch (IOException e) {
-			return false;
-		}
 		files = new File (file, "indexfile.txt");
 		try {
 			files.createNewFile();

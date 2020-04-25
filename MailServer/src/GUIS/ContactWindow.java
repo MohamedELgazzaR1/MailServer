@@ -152,7 +152,7 @@ public class ContactWindow extends JFrame {
 				load.setFrom(myreader.nextLine());
 				load.setTo(myreader.nextLine());
 				load.setSubject(myreader.nextLine());
-				folderIndex.add(load);		
+				folderIndex.add(0, load);		
 			}
 			myreader.close();
 		}		
@@ -267,7 +267,7 @@ public class ContactWindow extends JFrame {
 						load.setFrom(myreader.nextLine());
 						load.setTo(myreader.nextLine());
 						load.setSubject(myreader.nextLine());
-						folderIndex.add(load);		
+						folderIndex.add(0, load);		
 					}
 					myreader.close();
 				}		

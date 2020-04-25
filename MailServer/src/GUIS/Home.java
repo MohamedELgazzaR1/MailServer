@@ -202,8 +202,6 @@ public class Home extends JFrame {
 							mainData[i] = data[i];
 						}
 						mainData[3] = "Inbox";
-						File trash = new File("D:\\MailServerData\\" + InputEmail.getText() + "\\Trash");
-						Mail.deleteFromTrash(trash, null, true);
 						ContactWindow.main(mainData);
 						frame.setVisible(false);
 
