@@ -146,7 +146,7 @@ public class App implements IApp{
 				dest0 = new File(dest, "mailsfile.txt");
 				try {
 					FileWriter wrt = new FileWriter(dest0, true);
-					wrt.write(mailname + '\n' + Integer.toString(email.getPriority()) + '\n' + email.getCurrentMail() + '\n' + email.getSubject() +'\n');
+					wrt.write(mailname + '\n' + Integer.toString(email.getPriority()) + '\n' + email.getCurrentMail() + '\n' + temp + '\n' + email.getSubject() +'\n');
 					wrt.close();
 				} catch (IOException e) {
 					return false;
@@ -157,7 +157,7 @@ public class App implements IApp{
 		File sent = new File(mail, "mailsfile.txt");
 		try {
 			FileWriter wrt = new FileWriter(sent, true);
-			wrt.write(mailname + '\n' + Integer.toString(email.getPriority()) + '\n');
+			wrt.write(mailname + '\n' + Integer.toString(email.getPriority()) + '\n' + email.getCurrentMail() + '\n' );
 			if (!email.getMails().isEmpty() && !email.getDraft()) {
 				wrt.write((String) email.getMails().dequeue());
 			} else if (!mails2.isEmpty() && email.getDraft()) {

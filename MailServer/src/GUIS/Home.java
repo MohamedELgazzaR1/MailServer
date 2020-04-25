@@ -197,9 +197,14 @@ public class Home extends JFrame {
 					if(test.signin(InputEmail.getText(), inputPassword.getText())) {
 						JOptionPane.showMessageDialog(null,"Logged in successfully.");
 						String[] data = Contact.getData(InputEmail.getText());
+						String[] mainData = new String[4];
+						for (int i = 0 ; i < 3 ; i++) {
+							mainData[i] = data[i];
+						}
+						mainData[3] = "Inbox";
 						File trash = new File("D:\\MailServerData\\" + InputEmail.getText() + "\\Trash");
 						Mail.deleteFromTrash(trash, null, true);
-						ContactWindow.main(data);
+						ContactWindow.main(mainData);
 						frame.setVisible(false);
 
 		

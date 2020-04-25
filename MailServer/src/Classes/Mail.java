@@ -15,7 +15,7 @@ import interfaces.ILinkedList;
 import interfaces.IQueue;
 
 public class Mail implements IMail{
-	final static int lines = 4;
+	final static int lines = 5;
 	Boolean Draft;
 	int prior;
 	IQueue mails;
