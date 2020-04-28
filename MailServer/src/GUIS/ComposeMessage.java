@@ -414,6 +414,7 @@ public class ComposeMessage extends JFrame{
 		
 		// Deal with Send Message from Contacts
 		if(sendTo!=null) {
+			fromField.setText(currentEmail);
 			toField.setText(sendTo);
 			toField.setEditable(false);
 			sendTo=null;

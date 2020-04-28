@@ -268,14 +268,13 @@ public class MainHub extends JFrame {
 		   				composeData[3] = myreader.nextLine();
 		   				//subject
 		   				composeData[4] = myreader.nextLine();
-		   				//body
+		   				//skip attachments line
 		   				myreader.nextLine();
+		   				//body
 		   				String add = "";
 		   				while(myreader.hasNextLine()) {
-		   					add = myreader.nextLine();
-		   					if (!add.isBlank()) {
-		   						body += add;
-		   					}
+		   					 
+		   					body += myreader.nextLine();
 		   					body += "\n";
 		   					
 		   				}
