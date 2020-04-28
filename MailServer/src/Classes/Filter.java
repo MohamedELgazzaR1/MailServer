@@ -24,6 +24,11 @@ public class Filter {
 		while(start<=end) {
 			start=(int)search.pop();
 			end=(int)search.pop();
+			if (start == end) {
+				if(compare(Target,data[start]) == 0) {
+					return start;
+				}
+			}
 			int mid=start+ (end - 1)/2;
 			if(compare(Target,data[mid]) > 0) {
 				start=mid + 1;

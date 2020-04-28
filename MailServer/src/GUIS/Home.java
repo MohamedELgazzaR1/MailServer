@@ -75,8 +75,6 @@ public class Home extends JFrame {
 				String repass=uprepassword.getText();	
 				
 				
-				// EDIT IS Blank
-				
 				if(upusername.getText().isBlank()) {
 					JOptionPane.showMessageDialog(null,"Please fill Username field.","Error",JOptionPane.ERROR_MESSAGE);
 				}
@@ -202,9 +200,7 @@ public class Home extends JFrame {
 							mainData[i] = data[i];
 						}
 						mainData[3] = "Inbox";
-						File trash = new File("D:\\MailServerData\\" + InputEmail.getText() + "\\Trash");
-						Mail.deleteFromTrash(trash, null, true);
-						ContactWindow.main(mainData);
+						MainHub.main(mainData);
 						frame.setVisible(false);
 
 		

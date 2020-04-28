@@ -102,16 +102,8 @@ public class App implements IApp{
 			mail = new File("D:\\MailServerData\\" + email.getCurrentMail() + "\\Sent", mailname);
 		}
 		Mail.mkmail(mail);
-		File file = new File (mail,"body.txt");
+		File file = new File (mail,"indexfile.txt");
 		try {
-			FileWriter wrt = new FileWriter(file);
-			wrt.write(email.getBody());
-			wrt.close();
-		} catch (IOException e) {
-			return false;
-		}
-		try {
-			file = new File (mail,"indexfile.txt");
 			FileWriter wrt = new FileWriter(file, true);
 			wrt.write(mailname + '\n' + email.getCurrentMail() + '\n');
 			for (int i = 1; i <= sz; i++) {
@@ -119,22 +111,24 @@ public class App implements IApp{
 				wrt.write(temp + ' ');
 				mails2.enqueue(temp);
 			}
-			wrt.write('\n' + Integer.toString(email.getPriority()) + '\n' + email.getSubject());
+			wrt.write('\n' + Integer.toString(email.getPriority()) + '\n' + email.getSubject() + '\n');
+			if (email.getfiles() != null) {
+				int atnum = email.getfiles().size();
+				for (int i = 1; i <= atnum; i++) {
+					File attach = (File) email.getfiles().get(i);
+					file = new File (mail.getAbsolutePath() + "\\Attachments\\" + attach.getName());
+					wrt.write(attach.getName() + ' ');
+					try {
+						Files.copy(attach.toPath(), file.toPath());
+					} catch (IOException e) {
+						return false;
+					}
+				}
+			}
+			wrt.write('\n' + email.getBody());
 			wrt.close();
 		} catch (IOException e) {
 			return false;
-		}
-		if (email.getfiles() != null) {
-			int atnum = email.getfiles().size();
-			for (int i = 1; i <= atnum; i++) {
-				File attach = (File) email.getfiles().get(i);
-				file = new File (mail.getAbsolutePath() + "\\Attachments\\" + attach.getName());
-				try {
-					Files.copy(attach.toPath(), file.toPath());
-				} catch (IOException e) {
-					return false;
-				}
-			}
 		}
 		if (!email.getDraft()) {
 			for (int i = 1; i <= sz; i++) {

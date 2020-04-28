@@ -47,7 +47,7 @@ public class ComposeMessage extends JFrame{
 
 	private JPanel contentPane;
 	private JLabel toLbl;
-	private JTextArea toField;
+	private static JTextArea toField;
 	private JLabel subjectLbl;
 	private JTextField subjectField;
 	private JTextArea messageField;
@@ -56,6 +56,7 @@ public class ComposeMessage extends JFrame{
 	private JButton discardBtn;
 	private JButton draftBtn;
 	private static String currentEmail = "";
+	private static String  sendTo= "";
 	private Choice priority;
 	private JLabel priorityLbl;
 	private JLabel lblNewLabel;
@@ -85,7 +86,8 @@ public class ComposeMessage extends JFrame{
 			}
 		});
 		currentEmail = args[0];
-		
+		sendTo = args[1];
+
 	}
 
 	/**
@@ -165,7 +167,11 @@ public class ComposeMessage extends JFrame{
 		toField.setWrapStyleWord(true);
 		toField.setLineWrap(true);
 		toField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+		if(sendTo!=null) {
+			toField.setText(sendTo);
+			toField.setEditable(false);
+			sendTo=null;
+		}
 		
 		subjectLbl = new JLabel("Subject");
 		subjectLbl.setBounds(19, 69, 94, 39);

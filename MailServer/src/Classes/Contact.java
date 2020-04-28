@@ -51,6 +51,63 @@ public class Contact implements IContact {
 		return name;
 	}
 	
+	public static boolean existContact(String AddedAccount) {
+		Scanner myreader;
+			try {
+				int linecounter=0;
+				File myobj =new File("D:\\MailServerData\\database.txt");
+				myreader = new Scanner(myobj);
+				while(myreader.hasNextLine()) {
+					String data=myreader.nextLine();
+					if(linecounter%2==0) {
+						if(AddedAccount.compareTo(data)==0) {
+							myreader.close();
+							return true;
+						}	
+					}
+					linecounter++;
+				}
+			} catch (FileNotFoundException e) {
+				return false;
+			}
+			myreader.close();
+			return false;
+		}
+			
+	void DeleteContact(String UserAccount,String Name) {
+		
+	}
+	
+	
+public static boolean addContact(String UserAccount,String AddedAccount) {
+		
+		try {
+			File myobj =new File("D:\\MailServerData\\"+UserAccount+"\\contacts.txt");
+			Scanner myreader= new Scanner(myobj);
+			while(myreader.hasNextLine()) {
+				String data=myreader.nextLine();
+					if(AddedAccount.compareTo(data)==0) {
+						myreader.close();
+						return false;
+					}	
+			}
+			myreader.close();
+			try {
+				FileWriter wrt = new FileWriter(myobj, true);
+					wrt.write(AddedAccount+"\n");
+		
+				wrt.close();
+			} catch (IOException e) {
+				return false;
+			}
+		} catch (FileNotFoundException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	
+	
 	
 
 	@Override
@@ -74,7 +131,9 @@ public class Contact implements IContact {
 			}
 		}
 		File contactinfo = new File(mailfolder, "contactinfo.txt");
+		File contacts = new File(mailfolder, "contacts.txt");
 		try {
+			contacts.createNewFile();
 			contactinfo.createNewFile();
 		} catch (IOException e) {
 			return false;
