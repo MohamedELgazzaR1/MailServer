@@ -55,7 +55,7 @@ public class MainHub extends JFrame {
 	private JButton nextBtn;
 	private JButton prevBtn;
 	private JLabel pageLbl;
-	private int currentPage=1;
+	private static int currentPage=1;
 	private static Contact currentUser = new Contact();
 	private JLabel lblSearch;
 	private JTextField textField;
@@ -77,8 +77,13 @@ public class MainHub extends JFrame {
 	private JTable table;
 	private static ILinkedList folderIndex = new DList();
 	private static String loadedFolder;
+	private DefaultTableModel modelShowEmail;
+	private final int mailsPerPage = 15;
+	private int pagesPerFolder;
+	private int pageStart;
+	private int pageEnd;
+	private int lastPageMails;
 	
-
 	/**
 	 * Launch the application.
 	 */
@@ -98,6 +103,7 @@ public class MainHub extends JFrame {
 		currentUser.setpassword(args[2]);
 		currentUser.setrepassword(args[2]);
 		loadedFolder = args[3];
+		currentPage = Integer.parseInt(args[4]);
 		folderList.clear();
 		//Delete trash after 30 days after logging in
 		File trash = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Trash");
@@ -185,7 +191,7 @@ public class MainHub extends JFrame {
 		
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		DefaultTableModel modelShowEmail = new DefaultTableModel(
+		modelShowEmail = new DefaultTableModel(
 				new Object[][] {
 					{null, null, null, null, null, null},
 					{null, null, null, null, null, null},
@@ -231,32 +237,54 @@ public class MainHub extends JFrame {
 		scrollPane.setViewportView(table);
 		
 		//Show emails for the first time
-		for (int i = 0 ; i < folderIndex.size() ; i++) {
+		pagesPerFolder = (folderIndex.size( )/ mailsPerPage);
+		lastPageMails = folderIndex.size() % mailsPerPage;
+		if (lastPageMails > 0) {
+			pagesPerFolder++;
+		}
+		pageStart = (currentPage - 1)*mailsPerPage;
+		if (lastPageMails > 0 && currentPage == pagesPerFolder) {
+			pageEnd = (pageStart + lastPageMails) - 1 ;
+		}
+		else {
+			pageEnd = (currentPage * mailsPerPage) - 1;
+		}
+		
+		IndexMail[] pageArray = new IndexMail[mailsPerPage];
+		if(!folderIndex.isEmpty()) {
+			for(int i = pageStart , j = 0 ; i <= pageEnd && j < 15 ; i++ , j++) {
+				pageArray[j] = (IndexMail) folderIndex.get(i);
+			}
+		}
+		
+		for (int i = 0 ; i < mailsPerPage ; i++) {
 			for (int j = 1; j < 6 ; j++) {
-				String add = "";
-				if (j==1) {
-					add = "" + ((IndexMail) folderIndex.get(i)).getPriority();
+				if (pageArray[i]!=null) {
+					String add = "";
+					if (j==1) {
+						add = "" + pageArray[i].getPriority();
 
-				}
-				else if (j==2) {
-					add = ((IndexMail) folderIndex.get(i)).getSubject();
+					}
+					else if (j==2) {
+						add = pageArray[i].getSubject();
 
-				}
-				else if (j==3) {
-					add =((IndexMail) folderIndex.get(i)).getFrom();
+					}
+					else if (j==3) {
+						add = pageArray[i].getFrom();
 
-				}
-				else if (j==4) {
-					add = ((IndexMail) folderIndex.get(i)).getTo() ;
+					}
+					else if (j==4) {
+						add = pageArray[i].getTo() ;
 
+					}
+					else {
+						long temp = Long.parseLong(pageArray[i].getMailName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");    
+						Date resultdate = new Date(temp);
+						add = sdf.format(resultdate);
+					}
+					modelShowEmail.setValueAt(add, i, j);
 				}
-				else {
-					long temp = Long.parseLong(((IndexMail) folderIndex.get(i)).getMailName());
-					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");    
-					Date resultdate = new Date(temp);
-					add = sdf.format(resultdate);
-				}
-				modelShowEmail.setValueAt(add, i, j);
 			}
 		}
 		
@@ -299,6 +327,12 @@ public class MainHub extends JFrame {
 						modelShowEmail.setValueAt(null, i, j);
 					}
 				}
+				// Reset page if selection changed
+				if (loadedFolder.compareTo(folderSelect.getSelectedItem())!=0) {
+					currentPage = 1;
+					pageLbl.setText("Current Page: " + currentPage);
+				}
+				
 				folderIndex = new DList();
 				loadedFolder = folderSelect.getSelectedItem();
 				File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\"+ loadedFolder);
@@ -326,32 +360,54 @@ public class MainHub extends JFrame {
 				catch (FileNotFoundException ee) {
 				
 				}
-				for (int i = 0 ; i < folderIndex.size() ; i++) {
+				pagesPerFolder = (folderIndex.size( )/ mailsPerPage);
+				lastPageMails = folderIndex.size() % mailsPerPage;
+				if (lastPageMails > 0) {
+					pagesPerFolder++;
+				}
+				pageStart = (currentPage - 1)*mailsPerPage;
+				if (lastPageMails > 0 && currentPage == pagesPerFolder) {
+					pageEnd = (pageStart + lastPageMails) - 1 ;
+				}
+				else {
+					pageEnd = (currentPage * mailsPerPage) - 1;
+				}
+				
+				IndexMail[] pageArray = new IndexMail[mailsPerPage];
+				if(!folderIndex.isEmpty()) {
+					for(int i = pageStart , j = 0 ; i <= pageEnd && j < 15 ; i++ , j++) {
+						pageArray[j] = (IndexMail) folderIndex.get(i);
+					}
+				}
+				
+				for (int i = 0 ; i < mailsPerPage ; i++) {
 					for (int j = 1; j < 6 ; j++) {
-						String add = "";
-						if (j==1) {
-							add = "" + ((IndexMail) folderIndex.get(i)).getPriority();
+						if (pageArray[i]!=null) {
+							String add = "";
+							if (j==1) {
+								add = "" + pageArray[i].getPriority();
 
-						}
-						else if (j==2) {
-							add = ((IndexMail) folderIndex.get(i)).getSubject();
+							}
+							else if (j==2) {
+								add = pageArray[i].getSubject();
 
-						}
-						else if (j==3) {
-							add =((IndexMail) folderIndex.get(i)).getFrom();
+							}
+							else if (j==3) {
+								add = pageArray[i].getFrom();
 
-						}
-						else if (j==4) {
-							add = ((IndexMail) folderIndex.get(i)).getTo() ;
+							}
+							else if (j==4) {
+								add = pageArray[i].getTo() ;
 
+							}
+							else {
+								long temp = Long.parseLong(pageArray[i].getMailName());
+								SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");    
+								Date resultdate = new Date(temp);
+								add = sdf.format(resultdate);
+							}
+							modelShowEmail.setValueAt(add, i, j);
 						}
-						else {
-							long temp = Long.parseLong(((IndexMail) folderIndex.get(i)).getMailName());
-							SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");    
-							Date resultdate = new Date(temp);
-							add = sdf.format(resultdate);
-						}
-						modelShowEmail.setValueAt(add, i, j);
 					}
 				}
 				
@@ -389,9 +445,11 @@ public class MainHub extends JFrame {
 		nextBtn.setForeground(Color.WHITE);
 		nextBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// if less than last page number (after loading emails)
-				currentPage ++;
-				pageLbl.setText("Current Page: " + currentPage);
+				if (currentPage < pagesPerFolder) {
+					currentPage ++;
+					pageLbl.setText("Current Page: " + currentPage);
+					updateTable.itemStateChanged(null);
+				}
 			}
 		});
 		nextBtn.setBackground(SystemColor.textHighlight);
@@ -405,11 +463,9 @@ public class MainHub extends JFrame {
 				if (currentPage>1) {
 					currentPage--;
 					pageLbl.setText("Current Page: " + currentPage);
-					// Go back a page here (once pages are developed)
+					updateTable.itemStateChanged(null);
 				}
-				else {
-					// Error message or ignore ?
-				}
+				
 			}
 		});
 		prevBtn.setBackground(SystemColor.textHighlight);
@@ -445,8 +501,8 @@ public class MainHub extends JFrame {
 		contentPane.add(lblSort);
 		
 		sort = new Choice();
-		sort.add("Date & Time Ascendingly");
-		sort.add("Date & Time Descendingly");
+		sort.add("Newest first");
+		sort.add("Oldest first");
 		sort.add("Alphabetical Order");
 		sort.add("Reverse Alphabetical Order");
 		sort.setBounds(436, 130, 267, 40);
@@ -456,11 +512,12 @@ public class MainHub extends JFrame {
 		refreshBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
-				String[] user = new String[4];
+				String[] user = new String[6];
 				user[0] = currentUser.getname();
 				user[1] = currentUser.getemail();
 				user[2] = currentUser.getpassword();
 				user[3] = loadedFolder;
+				user[4] = "" + currentPage;
 				updateTable.itemStateChanged(null);
 				MainHub.main(user);
 			}

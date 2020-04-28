@@ -195,11 +195,12 @@ public class Home extends JFrame {
 					if(test.signin(InputEmail.getText(), inputPassword.getText())) {
 						JOptionPane.showMessageDialog(null,"Logged in successfully.");
 						String[] data = Contact.getData(InputEmail.getText());
-						String[] mainData = new String[4];
+						String[] mainData = new String[5];
 						for (int i = 0 ; i < 3 ; i++) {
 							mainData[i] = data[i];
 						}
 						mainData[3] = "Inbox";
+						mainData[4] = "1";
 						MainHub.main(mainData);
 						frame.setVisible(false);
 
