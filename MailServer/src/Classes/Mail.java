@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
-import InterFaces.IFolder;
-import InterFaces.IMail;
+import Interfaces.IFolder;
+import Interfaces.IMail;
 import classes.LinkedBased;
 import interfaces.ILinkedList;
 import interfaces.IQueue;

@@ -16,8 +16,8 @@ import javax.swing.text.StyledDocument;
 import Classes.App;
 import Classes.Contact;
 import Classes.Mail;
-import InterFaces.IApp;
-import InterFaces.IMail;
+import Interfaces.IApp;
+import Interfaces.IMail;
 import classes.*;
 import interfaces.*;
 

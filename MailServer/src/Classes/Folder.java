@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
-import InterFaces.IFolder;
+import Interfaces.IFolder;
 
 public class Folder implements IFolder {
 	File fldr;

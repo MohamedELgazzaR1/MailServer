@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
-import InterFaces.IContact;
+import Interfaces.IContact;
 
 public class Contact implements IContact {
 
@@ -78,7 +78,7 @@ public class Contact implements IContact {
 		
 	}
 	
-	
+	//Remove ??????
 public static boolean addContact(String UserAccount,String AddedAccount) {
 		
 		try {
@@ -111,12 +111,16 @@ public static boolean addContact(String UserAccount,String AddedAccount) {
 	
 
 	@Override
-	public Boolean newcontact(){
+	public Boolean newUser(){
 		String[] folders = {"Inbox", "Sent", "Draft", "Trash"};
 		File mailfolder = new File("D:\\MailServerData", this.email);
 		mailfolder.mkdir();
+		File allMailFolders = new File(mailfolder , "Mail Folders");
+		allMailFolders.mkdir();
+		File contactsFolder = new File(mailfolder , "Contacts");
+		contactsFolder.mkdir();
 		for (String folder : folders) {
-			File defFolders = new File(mailfolder, folder);
+			File defFolders = new File(allMailFolders, folder);
 			defFolders.mkdir();
 			File mails = new File(defFolders, "mailsfile.txt");
 			try {
@@ -130,16 +134,15 @@ public static boolean addContact(String UserAccount,String AddedAccount) {
 				return false;
 			}
 		}
-		File contactinfo = new File(mailfolder, "contactinfo.txt");
-		File contacts = new File(mailfolder, "contacts.txt");
+		File userInfo = new File(mailfolder, "userinfo.txt");
 		try {
-			contacts.createNewFile();
-			contactinfo.createNewFile();
+			
+			userInfo.createNewFile();
 		} catch (IOException e) {
 			return false;
 		}
 		try {
-			FileWriter wrt = new FileWriter(contactinfo, true);
+			FileWriter wrt = new FileWriter(userInfo, true);
 			wrt.write(this.name + '\n' + this.email + '\n' + this.password + '\n');
 			wrt.close();
 		} catch (IOException e) {
@@ -153,7 +156,7 @@ public static boolean addContact(String UserAccount,String AddedAccount) {
 		String[] data = new String[3];
 		int linecounter=0;
 		try {
-			File myobj =new File("D:\\MailServerData\\" + email + "\\contactinfo.txt");
+			File myobj =new File("D:\\MailServerData\\" + email + "\\userinfo.txt");
 			Scanner myreader= new Scanner(myobj);
 			while(myreader.hasNextLine()) {
 				String datapoint=myreader.nextLine();

@@ -106,10 +106,10 @@ public class MainHub extends JFrame {
 		currentPage = Integer.parseInt(args[4]);
 		folderList.clear();
 		//Delete trash after 30 days after logging in
-		File trash = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Trash");
+		File trash = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\Trash");
 		Mail.deleteFromTrash(trash, null, true);
 		//Load folders
-		File mailFolder = new File ("D:\\MailServerData\\" + currentUser.getemail());
+		File mailFolder = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders");
 		String[] files = mailFolder.list();
 		for (String filename : files) {
 			File currentFile = new File(mailFolder, filename);
@@ -143,7 +143,7 @@ public class MainHub extends JFrame {
 		}
 		//Load Emails for the Inbox (default selection)
 		folderIndex = new DList();
-		File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\"+ loadedFolder);
+		File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\"+ loadedFolder);
 		File currentIndex = new File(currentFile , "mailsfile.txt");
 		
 		Scanner myreader;
@@ -234,6 +234,9 @@ public class MainHub extends JFrame {
 		table.getColumnModel().getColumn(3).setPreferredWidth(140);
 		table.getColumnModel().getColumn(4).setPreferredWidth(140);
 		table.getColumnModel().getColumn(5).setPreferredWidth(140);
+		table.getTableHeader().setReorderingAllowed(false);
+		table.getTableHeader().setResizingAllowed(false);
+
 		scrollPane.setViewportView(table);
 		
 		//Show emails for the first time
@@ -252,7 +255,7 @@ public class MainHub extends JFrame {
 		
 		IndexMail[] pageArray = new IndexMail[mailsPerPage];
 		if(!folderIndex.isEmpty()) {
-			for(int i = pageStart , j = 0 ; i <= pageEnd && j < 15 ; i++ , j++) {
+			for(int i = pageStart , j = 0 ; i <= pageEnd && j < mailsPerPage ; i++ , j++) {
 				pageArray[j] = (IndexMail) folderIndex.get(i);
 			}
 		}
@@ -335,9 +338,8 @@ public class MainHub extends JFrame {
 				
 				folderIndex = new DList();
 				loadedFolder = folderSelect.getSelectedItem();
-				File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\"+ loadedFolder);
+				File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\"+ loadedFolder);
 				File currentIndex = new File(currentFile , "mailsfile.txt");
-				
 				Scanner myreader;
 				
 				try {	
@@ -375,7 +377,7 @@ public class MainHub extends JFrame {
 				
 				IndexMail[] pageArray = new IndexMail[mailsPerPage];
 				if(!folderIndex.isEmpty()) {
-					for(int i = pageStart , j = 0 ; i <= pageEnd && j < 15 ; i++ , j++) {
+					for(int i = pageStart , j = 0 ; i <= pageEnd && j < mailsPerPage ; i++ , j++) {
 						pageArray[j] = (IndexMail) folderIndex.get(i);
 					}
 				}
@@ -511,15 +513,15 @@ public class MainHub extends JFrame {
 		refreshBtn = new JButton("");
 		refreshBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dispose();
-				String[] user = new String[6];
-				user[0] = currentUser.getname();
-				user[1] = currentUser.getemail();
-				user[2] = currentUser.getpassword();
-				user[3] = loadedFolder;
-				user[4] = "" + currentPage;
+				//dispose();
+				//String[] user = new String[6];
+				//user[0] = currentUser.getname();
+				//user[1] = currentUser.getemail();
+				//user[2] = currentUser.getpassword();
+				//user[3] = loadedFolder;
+				//user[4] = "" + currentPage;
 				updateTable.itemStateChanged(null);
-				MainHub.main(user);
+				//MainHub.main(user);
 			}
 		});
 		refreshBtn.setIcon(new ImageIcon(MainHub.class.getResource("/Images/refresh.jpg")));
@@ -572,7 +574,7 @@ public class MainHub extends JFrame {
 				if (acceptableFolder == true) {
 					int dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to create the selected folder\""+folderName+"\"?","Confirmation",JOptionPane.YES_NO_OPTION);
 					if(dialogResult == JOptionPane.YES_OPTION) {
-						File newFolder = new File("D:\\MailServerData\\" + currentUser.getemail() , folderName);
+						File newFolder = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders" , folderName);
 						newFolder.mkdir();
 						File mailsFile = new File(newFolder, "mailsfile.txt");
 						try {
@@ -606,7 +608,7 @@ public class MainHub extends JFrame {
 					int dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete the selected folder\""+selectedFolder+"\"?","Confirmation",JOptionPane.YES_NO_OPTION);
 					if(dialogResult == JOptionPane.YES_OPTION) {
 						folderSelect.remove(selectedFolder);
-						File deleted = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\" + selectedFolder);
+						File deleted = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders" + selectedFolder);
 						Folder.deleteFolder(deleted);
 						folderSelect.select("Inbox");
 						updateTable.itemStateChanged(null);
@@ -651,8 +653,8 @@ public class MainHub extends JFrame {
 									int index = folderSelect.getSelectedIndex();
 									folderSelect.remove(index);
 									folderSelect.insert(folderName, index);
-									File old = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\" + selectedFolder);
-									File renamed = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\" + folderName);
+									File old = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders" + selectedFolder);
+									File renamed = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders" + folderName);
 									old.renameTo(renamed);
 								}
 								addFolderTxt.setText(null);

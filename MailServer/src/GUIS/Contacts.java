@@ -60,6 +60,7 @@ public class Contacts extends JFrame {
 		});
 	accountName=args[0];
 	DLM.clear();
+	//Remove ???
 	File myobj =new File("D:\\MailServerData\\"+accountName+"\\contacts.txt");
 	try {
 		Scanner myreader= new Scanner(myobj);
