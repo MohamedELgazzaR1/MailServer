@@ -9,10 +9,10 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
-import InterFaces.IApp;
-import InterFaces.IContact;
-import InterFaces.IFolder;
-import InterFaces.IMail;
+import Interfaces.IApp;
+import Interfaces.IContact;
+import Interfaces.IFolder;
+import Interfaces.IMail;
 import classes.LinkedBased;
 import interfaces.ILinkedList;
 import interfaces.IQueue;
@@ -56,6 +56,15 @@ public class App implements IApp{
 		int linecounter=0;
 		
 		try {
+			File start =new File("D:\\MailServerData");
+			start.mkdir();
+			File empty = new File(start,"database.txt");
+			empty.createNewFile();
+		}catch (Exception e) {
+			
+		}
+		
+		try {
 			File myobj =new File("D:\\MailServerData\\database.txt");
 			Scanner myreader= new Scanner(myobj);
 			while(myreader.hasNextLine()) {
@@ -80,7 +89,7 @@ public class App implements IApp{
 			} catch (IOException e) {
 				return false;
 			}
-			if (!contact.newcontact()) {
+			if (!contact.newUser()) {
 				return false;
 			}
 		} catch (FileNotFoundException e) {
@@ -97,9 +106,9 @@ public class App implements IApp{
 		File mail = null;
 		int sz = email.getMails().size();
 		if (email.getDraft()) {
-			mail = new File("D:\\MailServerData\\" + email.getCurrentMail() + "\\Draft", mailname);
+			mail = new File("D:\\MailServerData\\" + email.getCurrentMail() + "\\Mail Folders\\Draft", mailname);
 		} else {
-			mail = new File("D:\\MailServerData\\" + email.getCurrentMail() + "\\Sent", mailname);
+			mail = new File("D:\\MailServerData\\" + email.getCurrentMail() + "\\Mail Folders\\Sent", mailname);
 		}
 		Mail.mkmail(mail);
 		File file = new File (mail,"indexfile.txt");
@@ -134,7 +143,7 @@ public class App implements IApp{
 			for (int i = 1; i <= sz; i++) {
 				String temp = (String)mails2.dequeue();
 				email.getMails().enqueue(temp);
-				File dest = new File("D:\\MailServerData\\" + temp + "\\Inbox\\");
+				File dest = new File("D:\\MailServerData\\" + temp + "\\Mail Folders\\Inbox\\");
 				File dest0 = new File(dest, mailname);
 				Folder.copyFolder(mail, dest0);
 				dest0 = new File(dest, "mailsfile.txt");

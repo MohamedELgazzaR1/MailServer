@@ -75,8 +75,6 @@ public class Home extends JFrame {
 				String repass=uprepassword.getText();	
 				
 				
-				// EDIT IS Blank
-				
 				if(upusername.getText().isBlank()) {
 					JOptionPane.showMessageDialog(null,"Please fill Username field.","Error",JOptionPane.ERROR_MESSAGE);
 				}
@@ -197,12 +195,13 @@ public class Home extends JFrame {
 					if(test.signin(InputEmail.getText(), inputPassword.getText())) {
 						JOptionPane.showMessageDialog(null,"Logged in successfully.");
 						String[] data = Contact.getData(InputEmail.getText());
-						String[] mainData = new String[4];
+						String[] mainData = new String[5];
 						for (int i = 0 ; i < 3 ; i++) {
 							mainData[i] = data[i];
 						}
 						mainData[3] = "Inbox";
-						ContactWindow.main(mainData);
+						mainData[4] = "1";
+						MainHub.main(mainData);
 						frame.setVisible(false);
 
 		

@@ -31,14 +31,14 @@ public class Filter {
 			}
 			int mid=start+ (end - 1)/2;
 			if(compare(Target,data[mid]) > 0) {
-				start=mid + 1;
+				search.push(end);
+				search.push(mid + 1);
 			}else if(compare(Target,data[mid]) < 0) {
-				end=mid - 1;
+				search.push(mid - 1);
+				search.push(start);
 			}else {
 				return mid;
 			}
-			search.push(end);
-			search.push(start);
 		}
 		return -1;
 	}

@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
-import InterFaces.IFolder;
-import InterFaces.IMail;
+import Interfaces.IFolder;
+import Interfaces.IMail;
 import classes.LinkedBased;
 import interfaces.ILinkedList;
 import interfaces.IQueue;
@@ -30,6 +30,10 @@ public class Mail implements IMail{
 		return lines;
 	}
 	
+	
+	
+	
+	
 	public static Boolean checkmail(String mail) {
 		String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 			if(!mail.matches(regex)){
@@ -38,7 +42,7 @@ public class Mail implements IMail{
 		return true;
 	}
 	
-	public static int choosePriorty(String prio) {
+	public static int choosePriority(String prio) {
 		if (prio.compareTo("Normal") == 0) {
 			return 3;
 		} else if (prio.compareTo("Very High") == 0) {
@@ -52,6 +56,20 @@ public class Mail implements IMail{
 		}
 	}
 	
+	public static String getPriority(int prio) {
+		if (prio == 3) {
+			return "Normal";
+		} else if (prio == 1) {
+			return "Very High";
+		} else if (prio == 2) {
+			return "High";
+		} else if (prio == 4) {
+			return "Low";
+		} else {
+			return "Very Low";
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -62,7 +80,7 @@ public class Mail implements IMail{
 		IQueue emailList = new LinkedBased();
 		String hold = "";
 		for (int i = 0; i < toFieldInput.length(); i++) {
-			if (toFieldInput.charAt(i) != ',') {
+			if (toFieldInput.charAt(i) != ' ') {
 				hold += toFieldInput.charAt(i);
 			}
 			else {

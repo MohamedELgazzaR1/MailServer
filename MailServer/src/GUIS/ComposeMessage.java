@@ -16,8 +16,8 @@ import javax.swing.text.StyledDocument;
 import Classes.App;
 import Classes.Contact;
 import Classes.Mail;
-import InterFaces.IApp;
-import InterFaces.IMail;
+import Interfaces.IApp;
+import Interfaces.IMail;
 import classes.*;
 import interfaces.*;
 
@@ -47,7 +47,7 @@ public class ComposeMessage extends JFrame{
 
 	private JPanel contentPane;
 	private JLabel toLbl;
-	private JTextArea toField;
+	private static JTextArea toField;
 	private JLabel subjectLbl;
 	private JTextField subjectField;
 	private JTextArea messageField;
@@ -56,6 +56,12 @@ public class ComposeMessage extends JFrame{
 	private JButton discardBtn;
 	private JButton draftBtn;
 	private static String currentEmail = "";
+	private static String  sendTo= "";
+	private static String  sendFrom= null;
+	private static String  Prio= null;
+	private static String  subject= null;
+	private static String  body= null;
+	private static String  attachmentPath= null;
 	private Choice priority;
 	private JLabel priorityLbl;
 	private JLabel lblNewLabel;
@@ -70,6 +76,7 @@ public class ComposeMessage extends JFrame{
 	private static final int MAX_CHARACTERS = 10;
 	
 	ILinkedList attaches = new SinglyLinkedList();
+	private JTextField fromField;
 	/**
 	 * Launch the application.
 	 */
@@ -85,7 +92,15 @@ public class ComposeMessage extends JFrame{
 			}
 		});
 		currentEmail = args[0];
-		
+		sendTo = args[1];
+		//If an email is opened from MainHub.
+		if (args.length>2) {
+			sendFrom = args[2];
+			Prio = args[3];
+			subject = args[4];
+			body = args[5];
+			attachmentPath = args[6];
+		}
 	}
 
 	/**
@@ -118,9 +133,10 @@ public class ComposeMessage extends JFrame{
 								try {
 									desktop.open(attachment);
 								} catch (IOException e1) {
-								}             
-							}  
+								}    
 							break;
+							}  
+							
 						}
 					
 				}
@@ -154,28 +170,28 @@ public class ComposeMessage extends JFrame{
 		
 		
 		toLbl = new JLabel("To");
-		toLbl.setBounds(46, 29, 40, 39);
+		toLbl.setBounds(43, 43, 54, 39);
 		toLbl.setForeground(Color.WHITE);
 		toLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		toLbl.setFont(new Font("Tahoma", Font.BOLD, 21));
 		contentPane.add(toLbl);
 		
 		toField = new JTextArea();
-		toField.setBounds(0, 70, 492, 39);
+		toField.setBounds(0, 51, 492, 39);
 		toField.setWrapStyleWord(true);
 		toField.setLineWrap(true);
 		toField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		
 		subjectLbl = new JLabel("Subject");
-		subjectLbl.setBounds(19, 69, 94, 39);
+		subjectLbl.setBounds(21, 85, 94, 39);
 		subjectLbl.setForeground(Color.WHITE);
 		subjectLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		subjectLbl.setFont(new Font("Tahoma", Font.BOLD, 21));
 		contentPane.add(subjectLbl);
 		
 		subjectField = new JTextField();
-		subjectField.setBounds(134, 77, 463, 23);
+		subjectField.setBounds(136, 93, 463, 23);
 		subjectField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		contentPane.add(subjectField);
 		
@@ -198,7 +214,7 @@ public class ComposeMessage extends JFrame{
 					
 					// Prepare subject line and message contents
 					String prio = priority.getSelectedItem();
-					int out = Mail.choosePriorty(prio);
+					int out = Mail.choosePriority(prio);
 					
 					cmps.setMails(emailList);
 					cmps.setSubject(subjectField.getText());
@@ -207,6 +223,11 @@ public class ComposeMessage extends JFrame{
 					
 					if (cmps.getSubject().isBlank()) {
 						JOptionPane.showMessageDialog(null,"Cannot send an email without subject.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					
+					if (cmps.getSubject().length() > 60) {
+						JOptionPane.showMessageDialog(null,"Subject is too long.","Error",JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 					
@@ -281,7 +302,7 @@ public class ComposeMessage extends JFrame{
 					
 					// Prepare subject line and message contents
 					String prio = priority.getSelectedItem();
-					int out = Mail.choosePriorty(prio);
+					int out = Mail.choosePriority(prio);
 					
 					cmps.setMails(emailList);
 					cmps.setSubject(subjectField.getText());
@@ -291,6 +312,11 @@ public class ComposeMessage extends JFrame{
 					//
 					if (cmps.getSubject().isBlank()) {
 						JOptionPane.showMessageDialog(null,"Cannot save an email without Subject.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					
+					if (cmps.getSubject().length() > 60) {
+						JOptionPane.showMessageDialog(null,"Subject is too long.","Error",JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 				
@@ -374,14 +400,80 @@ public class ComposeMessage extends JFrame{
 		contentPane.add(scrollPaneMessage);
 		
 		scrollPaneTo = new JScrollPane(toField);
-		scrollPaneTo.setBounds(134, 29, 463, 39);
+		scrollPaneTo.setBounds(136, 52, 463, 25);
 		contentPane.add(scrollPaneTo);
+		
+		JLabel fromLbl = new JLabel("From");
+		fromLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		fromLbl.setForeground(Color.WHITE);
+		fromLbl.setFont(new Font("Tahoma", Font.BOLD, 21));
+		fromLbl.setBounds(21, 5, 94, 39);
+		contentPane.add(fromLbl);
+		
+		fromField = new JTextField();
+		fromField.setEditable(false);
+		fromField.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		fromField.setBounds(136, 13, 463, 23);
+		contentPane.add(fromField);
 		
 		
 		lblNewLabel = new JLabel("");
 		lblNewLabel.setBounds(0, -18, 1007, 592);
 		lblNewLabel.setIcon(new ImageIcon(ComposeMessage.class.getResource("/Images/paperplanemaking.jpeg")));
 		contentPane.add(lblNewLabel);
+		
+		// Deal with Send Message from Contacts
+		if(sendTo!=null) {
+			fromField.setText(currentEmail);
+			toField.setText(sendTo);
+			toField.setEditable(false);
+			sendTo=null;
+		}
+		//Deal with opening an email
+		if (sendFrom!=null) {
+			fromField.setText(sendFrom);
+			fromField.setEditable(false);
+			toField.setEditable(true);
+			File check = new File(attachmentPath);
+			if(check.getParentFile().getParentFile().getName().compareTo("Draft")!=0) {
+				toField.setEditable(false);
+				subjectField.setEditable(false);
+				messageField.setEditable(false);
+				btnClear.setVisible(false);
+				btnRemoveAttachment.setVisible(false);
+				addAttachBtn.setVisible(false);
+				draftBtn.setVisible(false);
+				sendBtn.setVisible(false);
+				priority.setEnabled(false);
+				discardBtn.setVisible(false);
+			}
+			subjectField.setText(subject);
+			
+			messageField.setText(body);
+			
+			File attachments = new File(attachmentPath);
+			String[] files = attachments.list();
+			for (String filename : files) {
+				File currentFile = new File(attachments, filename);
+				attaches.add(currentFile);
+				attachList.add(filename);
+				attachList.select(filename);
+				
+			}
+			
+			String priorityString = Mail.getPriority(Integer.parseInt(Prio));
+			
+			priority.select(priorityString);
+			sendFrom = null;
+			
+			
+		}
+		else {
+			fromField.setText(currentEmail);
+			fromField.setEditable(false);
+	
+		}
+		
 		
 	}
 }
