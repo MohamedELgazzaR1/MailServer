@@ -122,8 +122,7 @@ public class Contacts extends JFrame {
 					Emails.setModel(DLM2);
 					myreader.close();
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null,"Error.","Error",JOptionPane.ERROR_MESSAGE);
 				}
 
 			}

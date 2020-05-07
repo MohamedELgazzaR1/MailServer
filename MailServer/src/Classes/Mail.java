@@ -1,14 +1,11 @@
 package Classes;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
-import Interfaces.IFolder;
 import Interfaces.IMail;
 import classes.LinkedBased;
 import interfaces.ILinkedList;
