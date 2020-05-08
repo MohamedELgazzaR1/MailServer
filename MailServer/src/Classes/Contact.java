@@ -6,8 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-import javax.swing.JOptionPane;
-
 import Interfaces.IContact;
 
 public class Contact implements IContact {
@@ -51,7 +49,49 @@ public class Contact implements IContact {
 		return name;
 	}
 	
-	public static boolean existContact(String AddedAccount) {
+	/**
+	public static String toDate(String in) {
+		SimpleDateFormat D = new SimpleDateFormat("MMM dd,yyyy HH:mm"); 
+		String[] data=in.split("\\s+");
+		Date temp1=new Date(Long.parseLong(data[data.length-1]));
+		String	newdate=D.format(temp1);
+		data[data.length-1]=newdate;
+		String result="";
+		for(String temp : data) {
+			if(temp.compareTo(newdate)==0) {
+				result+="                                                     ";
+				result+=temp;
+			}else {
+				result+=temp;
+				result+=" ";
+			}
+		}
+		return result;
+	}
+	**/
+	
+	
+	public static boolean existExtraEmail(String currentAccount,String currentContact,String AddedAccount) {
+		Scanner myreader;
+			try {
+				File myobj =new File("D:\\MailServerData\\"+currentAccount+"\\Contacts\\"+currentContact+".txt");
+				myreader = new Scanner(myobj);
+				while(myreader.hasNextLine()) {
+					String data=myreader.nextLine();
+						if(AddedAccount.compareTo(data)==0) {
+							myreader.close();
+							return true;
+						}	
+				}
+			} catch (FileNotFoundException e) {
+				return false;
+			}
+			myreader.close();
+			return false;
+		}
+	
+	
+	public static boolean existEmail(String AddedAccount) {
 		Scanner myreader;
 			try {
 				int linecounter=0;
@@ -74,37 +114,32 @@ public class Contact implements IContact {
 			return false;
 		}
 			
+	public static boolean addContact(String userAccount,String addedContact,String addedEmail) {
+		
+		try {
+				
+			File f=new File("D:\\MailServerData\\"+userAccount+"\\Contacts\\"+addedContact+".txt");
+			f.createNewFile();
+			File newOne=f;
+			FileWriter wrt = new FileWriter(newOne, true);
+			wrt.write(addedEmail+"\n");
+			wrt.close();
+		} catch (FileNotFoundException e) {
+			return false;
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+	
+	
+	
 	void DeleteContact(String UserAccount,String Name) {
 		
 	}
 	
 	//Remove ??????
-public static boolean addContact(String UserAccount,String AddedAccount) {
-		
-		try {
-			File myobj =new File("D:\\MailServerData\\"+UserAccount+"\\contacts.txt");
-			Scanner myreader= new Scanner(myobj);
-			while(myreader.hasNextLine()) {
-				String data=myreader.nextLine();
-					if(AddedAccount.compareTo(data)==0) {
-						myreader.close();
-						return false;
-					}	
-			}
-			myreader.close();
-			try {
-				FileWriter wrt = new FileWriter(myobj, true);
-					wrt.write(AddedAccount+"\n");
-		
-				wrt.close();
-			} catch (IOException e) {
-				return false;
-			}
-		} catch (FileNotFoundException e) {
-			return false;
-		}
-		return true;
-	}
+
 	
 	
 	

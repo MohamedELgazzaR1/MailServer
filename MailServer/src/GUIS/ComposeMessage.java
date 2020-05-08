@@ -226,6 +226,11 @@ public class ComposeMessage extends JFrame{
 						return;
 					}
 					
+					if (cmps.getSubject().length() > 60) {
+						JOptionPane.showMessageDialog(null,"Subject is too long.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					
 					IApp C = new App();
 					if (C.compose(cmps)) {
 						JOptionPane.showMessageDialog(null,"Email sent successfully.","",JOptionPane.INFORMATION_MESSAGE);
@@ -307,6 +312,11 @@ public class ComposeMessage extends JFrame{
 					//
 					if (cmps.getSubject().isBlank()) {
 						JOptionPane.showMessageDialog(null,"Cannot save an email without Subject.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					
+					if (cmps.getSubject().length() > 60) {
+						JOptionPane.showMessageDialog(null,"Subject is too long.","Error",JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 				

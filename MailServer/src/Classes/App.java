@@ -11,9 +11,12 @@ import javax.swing.JOptionPane;
 
 import Interfaces.IApp;
 import Interfaces.IContact;
+import Interfaces.IFilter;
 import Interfaces.IFolder;
 import Interfaces.IMail;
+import Interfaces.ISort;
 import classes.LinkedBased;
+import classes.SinglyLinkedList;
 import interfaces.ILinkedList;
 import interfaces.IQueue;
 
@@ -130,6 +133,7 @@ public class App implements IApp{
 					try {
 						Files.copy(attach.toPath(), file.toPath());
 					} catch (IOException e) {
+						wrt.close();
 						return false;
 					}
 				}
@@ -199,7 +203,7 @@ public class App implements IApp{
 				String tim = Long.toString(t);
 				try {
 					FileWriter trashfilewriter = new FileWriter(trashtime, true);
-					trashfilewriter.write(tim + ' ' + src.getName() + '\n');
+					trashfilewriter.write(tim + ' ' + src.getName() + ' ' + folder.getName() + '\n');
 					trashfilewriter.close();
 				} catch (IOException e) {
 					JOptionPane.showMessageDialog(null,"System Files do not exist!","Error",JOptionPane.ERROR_MESSAGE);
@@ -240,6 +244,49 @@ public class App implements IApp{
 			}
 		}
 		
+	}
+	
+	public Boolean restoreEmails(ILinkedList mails) {
+		File firstmail = (File)mails.get(1);
+		File trash = firstmail.getParentFile();
+		File trashfile = new File(trash, "Trashfile.txt");
+		File currentFolder = trash.getParentFile();
+		int sz = mails.size();
+		for (int i = 1; i <= sz; i++) {
+			try {
+				Scanner scan = new Scanner(trashfile);
+				File targetfile = (File)mails.get(i);
+				String target = targetfile.getName();
+				while (scan.hasNextLine()) {
+					String line = scan.nextLine();
+					String[] arr = line.split(" ");
+					if (arr[1].compareTo(target) == 0) {
+						scan.close();
+						ILinkedList move = new SinglyLinkedList();
+						move.add(new File (trash, target));
+						IFolder des = new Folder(new File (currentFolder, arr[2]).getAbsolutePath());
+						moveEmails(move, des);
+						break;
+					}
+				}
+				scan.close();
+			} catch (FileNotFoundException e) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void setViewingOptions(IFolder folder, IFilter filter, ISort sort) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IMail[] listEmails(int page) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	

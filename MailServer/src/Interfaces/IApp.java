@@ -23,13 +23,13 @@ public interface IApp {
 	* @param filter to apply search, can be null
 	* @param sort to apply sort
 	*/
-	//public void setViewingOptions(IFolder folder, IFilter filter, ISort sort);
+	public void setViewingOptions(IFolder folder, IFilter filter, ISort sort);
 	/**
 	* You should use setViewingOptions function first
 	* @param page to handle paging
 	* @return list of emails
 	*/
-	//public IMail[] listEmails(int page);
+	public IMail[] listEmails(int page);
 	/**
 	* You should use setViewingOptions function first
 	* @param mails to be moved to trash

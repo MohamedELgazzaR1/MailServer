@@ -1,6 +1,12 @@
 package Classes;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+import classes.SinglyLinkedList;
 import classes.Stack;
+import interfaces.ILinkedList;
 
 public class Filter {
 	
@@ -31,15 +37,43 @@ public class Filter {
 			}
 			int mid=start+ (end - 1)/2;
 			if(compare(Target,data[mid]) > 0) {
-				start=mid + 1;
+				search.push(end);
+				search.push(mid + 1);
 			}else if(compare(Target,data[mid]) < 0) {
-				end=mid - 1;
+				search.push(mid - 1);
+				search.push(start);
 			}else {
 				return mid;
 			}
-			search.push(end);
-			search.push(start);
 		}
 		return -1;
+	}
+	
+	public static ILinkedList linearSearch (File currentfolder, String target) {
+		File[] folderslist = currentfolder.listFiles();
+		ILinkedList foundmails = new SinglyLinkedList();
+		int sz = folderslist.length;
+		for (int i = 0; i < sz; i++) {
+			if (folderslist[i].isDirectory()) {
+				File currentfile = new File(folderslist[i], "indexfile.txt");
+				try {
+					Scanner scan = new Scanner(currentfile);
+					//skip time line
+					scan.nextLine();
+					while(scan.hasNextLine()) {
+						String line = scan.nextLine();
+						if (line.indexOf(target) != -1) {
+							foundmails.add(folderslist[i]);
+							scan.close();
+							break;
+						}
+					}
+					scan.close();
+				} catch (FileNotFoundException e) {
+					return null;
+				}
+			}
+		}
+		return foundmails;
 	}
 }
