@@ -36,7 +36,7 @@ public class Filter implements IFilter{
 			} else if (code == 5) {
 				out = x.getPriority() - y.getPriority();
 			} else if (code == 6) {
-				out = -1 * x.getPriority() - y.getPriority();
+				out = -1 * (x.getPriority() - y.getPriority());
 			}
 		}
 		return out;
