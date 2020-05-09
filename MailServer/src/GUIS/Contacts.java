@@ -8,12 +8,18 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 import Classes.Contact;
 import Classes.Folder;
 import Classes.Mail;
+import Classes.Sort;
+import classes.DList;
 
 import javax.swing.JLabel;
+
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import java.awt.Color;
@@ -31,8 +37,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -40,6 +48,7 @@ import javax.swing.JTable;
 import java.awt.SystemColor;
 import javax.swing.UIManager;
 import javax.swing.SwingConstants;
+import java.awt.Choice;
 
 
 
@@ -57,6 +66,10 @@ public class Contacts extends JFrame {
 	private JTextField extraEmail;
 	private JLabel showcontact;
 	private JLabel showmail;
+	private JTextField searchContact;
+	private Choice sort;
+	private JButton btnSearch;
+	private ItemListener changeSort;
 	/**
 	 * Launch the application.
 	 */
@@ -88,7 +101,34 @@ public class Contacts extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	
+	
+	
+	class JTextFieldLimit extends PlainDocument {
+		  private int limit;
+		  JTextFieldLimit(int limit) {
+		    super();
+		    this.limit = limit;
+		  }
+
+		  JTextFieldLimit(int limit, boolean upper) {
+		    super();
+		    this.limit = limit;
+		  }
+
+		  public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
+		    if (str == null)
+		      return;
+
+		    if ((getLength() + str.length()) <= limit) {
+		      super.insertString(offset, str, attr);
+		    }
+		  }
+		}
+	
+	
 	public Contacts() {
+		
 		
 		
 	    ListSelectionListener listSelectionListener1 = new ListSelectionListener() {
@@ -108,8 +148,11 @@ public class Contacts extends JFrame {
 			public void valueChanged(ListSelectionEvent e) {
 			if(Names.getSelectedValue()!=null) {	
 				try {
-					String[] con =((String) Names.getSelectedValue()).split("\\s+");
-					showcontact.setText(con[0]);
+					showcontact.setText("");
+					String[] con =((String) Names.getSelectedValue()).split("\\s+");	
+					for(int i=0;i<con.length-1;i++) {
+						showcontact.setText(showcontact.getText()+" "+con[i]);
+					}
 					DLM2.clear();	
 					String currSelection=(String)Names.getSelectedValue();
 					File myobj =new File("D:\\MailServerData\\"+accountName+"\\Contacts\\"+currSelection+".txt");
@@ -192,7 +235,7 @@ public class Contacts extends JFrame {
 		showcontact = new JLabel("");
 		showcontact.setForeground(Color.YELLOW);
 		showcontact.setFont(new Font("Tahoma", Font.BOLD, 20));
-		showcontact.setBounds(612, 286, 162, 43);
+		showcontact.setBounds(612, 286, 230, 43);
 		contentPane.add(showcontact);
 		
 		JButton btnRemoveContact = new JButton("Remove Contact");
@@ -215,6 +258,7 @@ public class Contacts extends JFrame {
 				else {
 					JOptionPane.showMessageDialog(null,"Please Select a Contact !");
 				}
+				changeSort.itemStateChanged(null);
 			}
 		});
 		btnRemoveContact.setForeground(Color.WHITE);
@@ -231,13 +275,13 @@ public class Contacts extends JFrame {
 		JLabel lblEmail = new JLabel("Email");
 		lblEmail.setForeground(Color.WHITE);
 		lblEmail.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblEmail.setBounds(648, 93 ,147, 43);
+		lblEmail.setBounds(648, 104 ,147, 43);
 		contentPane.add(lblEmail);
 		
 		JLabel lblUserName = new JLabel("User Name");
 		lblUserName.setForeground(Color.WHITE);
 		lblUserName.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblUserName.setBounds(416, 93,147, 43);
+		lblUserName.setBounds(416, 104,147, 38);
 		contentPane.add(lblUserName);
 		
 		extraEmail = new JTextField();
@@ -260,6 +304,8 @@ public class Contacts extends JFrame {
 								wrt.write(extramail+"\n");
 								wrt.close();
 								JOptionPane.showMessageDialog(null,"Email added Successfully !");
+								extraEmail.setText(null);
+								
 							} catch (FileNotFoundException e1) {
 								
 							} catch (IOException e1) {
@@ -279,6 +325,7 @@ public class Contacts extends JFrame {
 			}else {
 				JOptionPane.showMessageDialog(null,"Please Fill Extra Email Field !","Error",JOptionPane.ERROR_MESSAGE);
 			}
+			
 			}
 			
 		});
@@ -313,7 +360,8 @@ public class Contacts extends JFrame {
 		SendMessage.setBounds(388, 424, 178, 44);
 		contentPane.add(SendMessage);
 		
-		name = new JTextField();
+		name = new JTextField(15);
+		name.setDocument(new JTextFieldLimit(20));
 		name.setBounds(416, 146, 194, 44);
 		contentPane.add(name);
 		name.setColumns(10);
@@ -331,7 +379,8 @@ public class Contacts extends JFrame {
 				String newName=name.getText()+"                                    "+String.valueOf(curr);
 				String newEmail=email.getText();
 				if(!(name.getText().isBlank()) && !(email.getText().isBlank())) {
-				if(Mail.checkmail(newEmail)) {
+				if(Pattern.matches("^[a-zA-Z ]+$",name.getText())) {
+					if(Mail.checkmail(newEmail)) {
 					if(Contact.existEmail(newEmail)) {
 						if(Contact.addContact(accountName,newName,newEmail)) {
 							
@@ -352,10 +401,14 @@ public class Contacts extends JFrame {
 				else {
 					 JOptionPane.showMessageDialog(null,"Invalid Email format !","Error",JOptionPane.ERROR_MESSAGE);
 				}
-			}
+			}else {
+				 JOptionPane.showMessageDialog(null,"Please enter Characters only !","Error",JOptionPane.ERROR_MESSAGE);
+			
+			}}
 			else {
 				 JOptionPane.showMessageDialog(null,"Please Fill Both Username and Email Field !","Error",JOptionPane.ERROR_MESSAGE);
 			}
+				changeSort.itemStateChanged(null);
 			}
 		});
 		btnAddContact.setBounds(533, 204, 194, 44);
@@ -367,16 +420,99 @@ public class Contacts extends JFrame {
 		lblContacts.setBounds(24, 9, 147, 43);
 		contentPane.add(lblContacts);
 		
+		JLabel lblSearch = new JLabel("Search Contact");
+		lblSearch.setForeground(Color.WHITE);
+		lblSearch.setFont(new Font("Tahoma", Font.BOLD, 20));
+		lblSearch.setBounds(212, 9, 171, 43);
+		contentPane.add(lblSearch);
+				
+	searchContact = new JTextField();
+	searchContact.setColumns(10);
+	searchContact.setBounds(387, 9, 194, 44);
+	contentPane.add(searchContact);
+					
+	btnSearch = new JButton("Search");
+	btnSearch.setForeground(Color.WHITE);
+	btnSearch.setFont(new Font("Tahoma", Font.PLAIN, 18));
+	btnSearch.setBackground(SystemColor.textHighlight);
+	btnSearch.setBounds(601, 8, 116, 44);
+	btnSearch.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			if(Pattern.matches("^[a-zA-Z ]+$",searchContact.getText())) {
+			String search = searchContact.getText();
+			File myobj =new File("D:\\MailServerData\\"+accountName+"\\contacts");
+			String[] contacts = myobj.list();
+			if (contacts.length!=0) {
+				DLM.clear();
+				DLM2.clear();
+				for (int i = 0 ; i < contacts.length ; i ++) {
+					String name = contacts[i];
+					if (name.contains(search)==true) {
+						DLM.addElement(contacts[i]);
+					}
+				}
+				
+			}
+
+			changeSort.itemStateChanged(null);
+			}else {
+				JOptionPane.showMessageDialog(null,"No Result Found !");
+			}
+			}
+	});
 	
-		JLabel LblImage = new JLabel("");
-		LblImage.setForeground(Color.WHITE);
-		LblImage.setIcon(new ImageIcon(Contacts.class.getResource("/Images/123.jpg")));
-		LblImage.setBounds(0, 0, 852, 502);
-		contentPane.add(LblImage);
+	contentPane.add(btnSearch);
+								
+	JLabel lblSort = new JLabel("Sort");
+	lblSort.setForeground(Color.WHITE);
+	lblSort.setFont(new Font("Tahoma", Font.BOLD, 20));
+	lblSort.setBounds(250, 47, 53, 43);
+	contentPane.add(lblSort);
+										
+	sort = new Choice();
+	sort.setBounds(387, 59, 194, 20);
+	sort.add("Alphabetical Order");
+	sort.add("Reverse Alphabetical Order");
+	changeSort = new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+			String[] contacts = new String[DLM.getSize()];
+			for (int i = 0 ; i < DLM.getSize() ; i++) {
+				contacts[i] = (String)DLM.get(i);
+			}
+			if (contacts.length!=0) {
+				for (int i = 0 ; i < contacts.length ; i ++) {
+					contacts[i] = contacts[i].split("\\.")[0];
+				}
+				Sort.quickSort(contacts, 0);
+				DLM.clear();
+				if (sort.getSelectedItem().compareTo("Alphabetical Order")==0) {
+					for (String name: contacts) {
+						DLM.addElement(name);
+					}
+				}
+				else {
+					for (String name: contacts) {
+						DLM.add(0, name);
+					}
+				}
+			}
+			
+				
+		}};
+		sort.addItemListener(changeSort);
+		
+	contentPane.add(sort);
+										
 	
-		contentPane.add(LblImage);
-	
-		contentPane.add(LblImage);
+	JLabel LblImage = new JLabel("");
+	LblImage.setForeground(Color.WHITE);
+	LblImage.setIcon(new ImageIcon(Contacts.class.getResource("/Images/123.jpg")));
+	LblImage.setBounds(0, 0, 852, 502);
+	contentPane.add(LblImage);
+										
+	contentPane.add(LblImage);
+											
+	contentPane.add(LblImage);
 	
 		
 	

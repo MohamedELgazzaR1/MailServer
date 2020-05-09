@@ -5,14 +5,20 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 import Interfaces.IApp;
 import Interfaces.IContact;
+import Interfaces.IFilter;
 import Interfaces.IFolder;
 import Interfaces.IMail;
+import Interfaces.ISort;
+import classes.DList;
 import classes.LinkedBased;
 import classes.SinglyLinkedList;
 import interfaces.ILinkedList;
@@ -21,6 +27,21 @@ import interfaces.IQueue;
 public class App implements IApp{
 
 	final int lines = Mail.getlines();
+	Folder currentFolder;
+	Sort sortType = new Sort();
+	Filter filterKey = new Filter();
+	public static int currentPage=1;
+	public static Contact currentUser = new Contact();
+	public static ILinkedList folderList = new SinglyLinkedList();
+	public static ILinkedList folderIndex = new DList();
+	public static String loadedFolder;
+	private static ILinkedList fileIndex;
+	public final int mailsPerPage = 15;
+	public int pagesPerFolder;
+	public int pageStart;
+	public int pageEnd;
+	public int lastPageMails;
+	private Mail[] pageArray;
 	
 	@Override
 	public boolean signin(String email, String password) {
@@ -37,6 +58,8 @@ public class App implements IApp{
 					if(email.compareTo(data)==0) {
 						if(password.compareTo(myreader.next())==0) {
 						myreader.close();
+						String args[] = Contact.getData(email);
+						firstLoadFolders(args);
 						return true;
 						}
 					}	
@@ -274,6 +297,163 @@ public class App implements IApp{
 		}
 		return true;
 	}
+
+	@Override
+	public void setViewingOptions(IFolder folder, IFilter filter, ISort sort) {
+		currentFolder = (Folder) folder;
+		filterKey = (Filter) filter;
+		sortType = (Sort) sort;
+		File currentFile =currentFolder.get();
+		fileIndex = new DList();
+		fileIndex = Filter.linearSearch(currentFile,filterKey.getText());
+		//sorting takes place at the end of listEmails
+		loadEmails();
+		int sz = folderIndex.size();
+		Mail[] nonsorted = new Mail[sz];
+		for (int i = 0; i < sz; i++) {
+			nonsorted[i] = (Mail)folderIndex.get(i);
+		}
+		Sort.quickSort(nonsorted, sortType.sortCode);
+		for (int i = 0; i < sz; i++) {
+			folderIndex.set(i, nonsorted[i]);
+		}
+	}
+
+	@Override
+	public IMail[] listEmails(int page) {
+		
+		currentPage = page;
+			
+		//Show emails for the first time
+				pagesPerFolder = (folderIndex.size( )/ mailsPerPage);
+				lastPageMails = folderIndex.size() % mailsPerPage;
+				if (lastPageMails > 0) {
+					pagesPerFolder++;
+				}
+				pageStart = (currentPage - 1)*mailsPerPage;
+				if (lastPageMails > 0 && currentPage == pagesPerFolder) {
+					pageEnd = (pageStart + lastPageMails) - 1 ;
+				}
+				else {
+					pageEnd = (currentPage * mailsPerPage) - 1;
+				}
+				
+				pageArray = new Mail[mailsPerPage];
+				if(!folderIndex.isEmpty()) {
+					for(int i = pageStart , j = 0 ; i <= pageEnd && j < mailsPerPage ; i++ , j++) {
+						pageArray[j] = (Mail) folderIndex.get(i);
+					}
+				}
+				
+				
+				
+		return pageArray;
+	}
+	
+	public void firstLoadFolders(String args[]) {
+		
+		///////////////////////////////////
+		currentUser.setname(args[0]);
+		currentUser.setemail(args[1]);
+		currentUser.setpassword(args[2]);
+		currentUser.setrepassword(args[2]);
+		loadedFolder = "Inbox";
+		currentPage = 1;
+		folderList.clear();
+		//Delete trash after 30 days after logging in
+		File trash = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\Trash");
+		Mail.deleteFromTrash(trash, null, true);
+		//Load folders
+		File mailFolder = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders");
+		String[] files = mailFolder.list();
+		for (String filename : files) {
+			File currentFile = new File(mailFolder, filename);
+			if (currentFile.isDirectory()) {
+				folderList.add(filename);
+			}
+		}
+		// Sort folders with original 4 at the top.
+		for (int j = 1; j <= 4 ; j++) {
+			String fName = "";
+			if (j==1) {
+				fName = "Inbox";
+			}
+			else if (j==2) {
+				fName = "Draft";
+			}
+			else if (j==3) {
+				fName = "Sent";
+			}
+			else {
+				fName = "Trash";
+			}
+			for (int i = 1 ; i <= folderList.size() ; i++) {
+				String folder = (String)folderList.get(i);
+				if (fName.compareTo(folder)==0) {
+					folderList.remove(i);
+					folderList.add(j, fName);
+					break;
+				}
+			}
+		}
+		
+		///////////////////////////////////
+		
+		///////////////////////////////////
+	}
+	
+	public void loadEmails() {
+		       //Load Emails for the selected folder
+				folderIndex = new DList();
+				File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\"+ loadedFolder);
+				File currentIndex = new File(currentFile , "mailsfile.txt");
+				
+				Scanner myreader;
+				
+				try {	
+					myreader = new Scanner(currentIndex);
+					while(myreader.hasNextLine()) {
+						String data=myreader.nextLine();
+						if (data.isBlank()) {
+							break;
+						}
+						//Add to folderIndex only if found in fileIndex
+						if (searchFileIndex(data)) {
+							Mail load = new Mail();
+							load.setMailName(data);
+							load.setPriority(Integer.parseInt(myreader.nextLine()));
+							load.setFrom(myreader.nextLine());
+							load.setTo(myreader.nextLine());
+							load.setSubject(myreader.nextLine());
+							folderIndex.add(0, load);	
+						}
+						else {
+							Integer.parseInt(myreader.nextLine());
+							myreader.nextLine();
+							myreader.nextLine();
+							myreader.nextLine();
+						}
+					}
+					myreader.close();
+				}		
+				catch (FileNotFoundException eee) {
+					
+							
+				}
+				
+	}
+	
+	public boolean searchFileIndex(String fileName) {
+		
+		for (int i = 0 ; i < fileIndex.size() ; i++) {
+			if (fileName.compareTo(((File)fileIndex.get(i)).getName())==0) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	
 	
 

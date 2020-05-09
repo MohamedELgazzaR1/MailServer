@@ -21,6 +21,10 @@ public class Mail implements IMail{
 	String body;
 	String currentmail;
 	
+	String mailName;
+	String from;
+	String to;
+	
 	
 	
 	public static int getlines() {
@@ -73,7 +77,7 @@ public class Mail implements IMail{
 	public IQueue checkEmailList(String toFieldInput) {
 		File existmails = new File("D:\\MailServerData");
 		String[] existMails = existmails.list();
-		Sort.quickSort(existMails);
+		Sort.quickSort(existMails, 0);
 		IQueue emailList = new LinkedBased();
 		String hold = "";
 		for (int i = 0; i < toFieldInput.length(); i++) {
@@ -253,4 +257,30 @@ public class Mail implements IMail{
 	public void setCurrentMail(String currentmail) {
 		this.currentmail = currentmail;
 	}
+	
+////////////////////////////////////////////////////////////////////////////////////////
+	
+	public String getMailName() {
+		return mailName;
+	}
+
+	public void setMailName (String mailName) {
+		this.mailName = mailName;
+	}
+	
+	public String getFrom() {
+		return from;
+	}
+
+	public void setFrom (String from) {
+		this.from = from;
+	}
+	public String getTo() {
+		return to;
+	}
+
+	public void setTo (String to) {
+		this.to = to;
+	}
+	
 }

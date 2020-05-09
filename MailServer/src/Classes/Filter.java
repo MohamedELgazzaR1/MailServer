@@ -4,18 +4,40 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import Interfaces.IFilter;
+import classes.DList;
 import classes.SinglyLinkedList;
 import classes.Stack;
 import interfaces.ILinkedList;
 
-public class Filter {
+public class Filter implements IFilter{
 	
-	public static long compare(String X, String Y) {
-		long out;
-		try {
-			out = Long.parseLong(X) - Long.parseLong(Y);
-		}catch(Exception e) {
-			out = X.compareTo(Y);
+	private static String text;
+	
+	public static long compare(Object X, Object Y, int code) {
+		long out = -404;
+		if (code == 0) {
+			try {
+				out = Long.parseLong((String)X) - Long.parseLong((String)Y);
+			}catch(Exception e) {
+				out = ((String)X).compareTo((String)Y);
+			}
+		} else {
+			Mail x = (Mail) X;
+			Mail y = (Mail) Y;
+			if (code == 1) {
+				out = -1 * x.getMailName().compareTo(y.getMailName());
+			} else if (code == 2) {
+				out = x.getMailName().compareTo(y.getMailName());
+			} else if (code == 3) {
+				out = x.getSubject().compareTo(y.getSubject());
+			} else if (code == 4) {
+				out = -1 * x.getSubject().compareTo(y.getSubject());
+			} else if (code == 5) {
+				out = x.getPriority() - y.getPriority();
+			} else if (code == 6) {
+				out = -1 * x.getPriority() - y.getPriority();
+			}
 		}
 		return out;
 	}
@@ -31,15 +53,15 @@ public class Filter {
 			start=(int)search.pop();
 			end=(int)search.pop();
 			if (start == end) {
-				if(compare(Target,data[start]) == 0) {
+				if(compare(Target,data[start], 0) == 0) {
 					return start;
 				}
 			}
 			int mid=start+ (end - 1)/2;
-			if(compare(Target,data[mid]) > 0) {
+			if(compare(Target,data[mid], 0) > 0) {
 				search.push(end);
 				search.push(mid + 1);
-			}else if(compare(Target,data[mid]) < 0) {
+			}else if(compare(Target,data[mid], 0) < 0) {
 				search.push(mid - 1);
 				search.push(start);
 			}else {
@@ -51,7 +73,7 @@ public class Filter {
 	
 	public static ILinkedList linearSearch (File currentfolder, String target) {
 		File[] folderslist = currentfolder.listFiles();
-		ILinkedList foundmails = new SinglyLinkedList();
+		ILinkedList foundmails = new DList();
 		int sz = folderslist.length;
 		for (int i = 0; i < sz; i++) {
 			if (folderslist[i].isDirectory()) {
@@ -76,4 +98,15 @@ public class Filter {
 		}
 		return foundmails;
 	}
+	
+	
+
+	public static String getText() {
+		return text;
+	}
+
+	public static void setText(String text) {
+		Filter.text = text;
+	}
+	
 }

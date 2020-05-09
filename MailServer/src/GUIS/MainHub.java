@@ -8,10 +8,15 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import Classes.App;
 import Classes.Contact;
+import Classes.Filter;
 import Classes.Folder;
-import Classes.IndexMail;
 import Classes.Mail;
+import Classes.Sort;
+import Interfaces.IFilter;
+import Interfaces.IFolder;
+import Interfaces.ISort;
 import classes.DList;
 import classes.SinglyLinkedList;
 import interfaces.ILinkedList;
@@ -58,10 +63,9 @@ public class MainHub extends JFrame {
 	private JButton nextBtn;
 	private JButton prevBtn;
 	private JLabel pageLbl;
-	private static int currentPage=1;
-	private static Contact currentUser = new Contact();
+	
 	private JLabel lblSearch;
-	private JTextField textField;
+	private JTextField searchField;
 	private Choice sort;
 	private JButton refreshBtn;
 	private JButton contactBtn;
@@ -75,18 +79,21 @@ public class MainHub extends JFrame {
 	private JLabel lblName;
 	private JLabel bgImage;
 	private JLabel lblSort;
-	private static ILinkedList folderList = new SinglyLinkedList();
+	private JButton btnSearch;
 	private JButton btnRenameFolder;
 	private JTable table;
-	private static ILinkedList folderIndex = new DList();
-	private static String loadedFolder;
 	private DefaultTableModel modelShowEmail;
-	private final int mailsPerPage = 15;
-	private int pagesPerFolder;
-	private int pageStart;
-	private int pageEnd;
-	private int lastPageMails;
-	private IndexMail[] pageArray;
+	private JButton btnMoveSelectedEmails;
+	private JButton btnDeleteSelectedEmails;
+	private JButton btnRestoreSelectedEmails;
+	private static ILinkedList selectedEmails = new SinglyLinkedList();
+	private String sortString = "Newest first";
+	private App mainApp = new App();
+	private Mail[] pageArray;
+	public static int currentPage=1;
+	private Folder currentFolder;
+	private Sort sortType = new Sort();
+	private Filter filterKey;
 	
 	/**
 	 * Launch the application.
@@ -102,76 +109,8 @@ public class MainHub extends JFrame {
 				}
 			}
 		});
-		currentUser.setname(args[0]);
-		currentUser.setemail(args[1]);
-		currentUser.setpassword(args[2]);
-		currentUser.setrepassword(args[2]);
-		loadedFolder = args[3];
-		currentPage = Integer.parseInt(args[4]);
-		folderList.clear();
-		//Delete trash after 30 days after logging in
-		File trash = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\Trash");
-		Mail.deleteFromTrash(trash, null, true);
-		//Load folders
-		File mailFolder = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders");
-		String[] files = mailFolder.list();
-		for (String filename : files) {
-			File currentFile = new File(mailFolder, filename);
-            if (currentFile.isDirectory()) {
-            	folderList.add(filename);
-            }
-		}
-		// Sort folders with original 4 at the top.
-		for (int j = 1; j <= 4 ; j++) {
-			String fName = "";
-			if (j==1) {
-				fName = "Inbox";
-			}
-			else if (j==2) {
-				fName = "Draft";
-			}
-			else if (j==3) {
-				fName = "Sent";
-			}
-			else {
-				fName = "Trash";
-			}
-			for (int i = 1 ; i <= folderList.size() ; i++) {
-				String folder = (String)folderList.get(i);
-				if (fName.compareTo(folder)==0) {
-					folderList.remove(i);
-					folderList.add(j, fName);
-					break;
-				}
-			}
-		}
-		//Load Emails for the Inbox (default selection)
-		folderIndex = new DList();
-		File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\"+ loadedFolder);
-		File currentIndex = new File(currentFile , "mailsfile.txt");
 		
-		Scanner myreader;
 		
-		try {	
-			myreader = new Scanner(currentIndex);
-			while(myreader.hasNextLine()) {
-				String data=myreader.nextLine();
-				if (data.isBlank()) {
-					break;
-				}
-				IndexMail load = new IndexMail();
-				load.setMailName(data);
-				load.setPriority(Integer.parseInt(myreader.nextLine()));
-				load.setFrom(myreader.nextLine());
-				load.setTo(myreader.nextLine());
-				load.setSubject(myreader.nextLine());
-				folderIndex.add(0, load);		
-			}
-			myreader.close();
-		}		
-		catch (FileNotFoundException eee) {
-		
-		}
 		
 	}
 
@@ -192,6 +131,13 @@ public class MainHub extends JFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(259, 200, 708, 264);
 		contentPane.add(scrollPane);
+		//First load
+		sortType.sortCode = 1;
+		currentFolder = new Folder("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\" + mainApp.loadedFolder);
+		filterKey.setText("");
+		mainApp.setViewingOptions(currentFolder, filterKey, sortType);
+		//mainApp.loadEmails();
+		
 		
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -249,7 +195,7 @@ public class MainHub extends JFrame {
 		        int row = table.rowAtPoint(point);
 		        if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
 		           int index = table.getSelectedRow();
-		           File email = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\"+ loadedFolder,pageArray[index].getMailName());
+		           File email = new File("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder,pageArray[index].getMailName());
 		           File contents = new File(email,"indexfile.txt");
 		           File attachments = new File(email,"Attachments");
 		           Scanner myreader;
@@ -257,10 +203,10 @@ public class MainHub extends JFrame {
 		   		try {	
 		   			myreader = new Scanner(contents);
 		   			String body = "";
-		   			
+		   				// Read email message
 		   				String data=myreader.nextLine();
 		   				String[] composeData = new String[7];
-		   				composeData[0] = currentUser.getemail();
+		   				composeData[0] = mainApp.currentUser.getemail();
 		   				//from
 		   				composeData[2] = myreader.nextLine();
 		   				//to
@@ -293,28 +239,9 @@ public class MainHub extends JFrame {
 
 		scrollPane.setViewportView(table);
 		
-		//Show emails for the first time
-		pagesPerFolder = (folderIndex.size( )/ mailsPerPage);
-		lastPageMails = folderIndex.size() % mailsPerPage;
-		if (lastPageMails > 0) {
-			pagesPerFolder++;
-		}
-		pageStart = (currentPage - 1)*mailsPerPage;
-		if (lastPageMails > 0 && currentPage == pagesPerFolder) {
-			pageEnd = (pageStart + lastPageMails) - 1 ;
-		}
-		else {
-			pageEnd = (currentPage * mailsPerPage) - 1;
-		}
+		pageArray = (Mail[]) mainApp.listEmails(1);
 		
-		pageArray = new IndexMail[mailsPerPage];
-		if(!folderIndex.isEmpty()) {
-			for(int i = pageStart , j = 0 ; i <= pageEnd && j < mailsPerPage ; i++ , j++) {
-				pageArray[j] = (IndexMail) folderIndex.get(i);
-			}
-		}
-		
-		for (int i = 0 ; i < mailsPerPage ; i++) {
+		for (int i = 0 ; i < mainApp.mailsPerPage ; i++) {
 			for (int j = 1; j < 6 ; j++) {
 				if (pageArray[i]!=null) {
 					String add = "";
@@ -372,12 +299,13 @@ public class MainHub extends JFrame {
 		folderSelect.setBounds(30, 485, 219, 40);
 		contentPane.add(folderSelect);
 		
-		for (int i = 1; i <= folderList.size() ; i++) {
-			folderSelect.add((String)folderList.get(i));
+		for (int i = 1; i <= mainApp.folderList.size() ; i++) {
+			folderSelect.add((String)mainApp.folderList.get(i));
 		}
-		folderSelect.select(loadedFolder);
+		folderSelect.select(mainApp.loadedFolder);
 		ItemListener updateTable = new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
+
 				// clear table
 				for (int i = 0 ; i < table.getRowCount() ; i++) {
 					for (int j = 0 ; j < table.getColumnCount() ; j++) {
@@ -385,58 +313,29 @@ public class MainHub extends JFrame {
 					}
 				}
 				// Reset page if selection changed
-				if (loadedFolder.compareTo(folderSelect.getSelectedItem())!=0) {
+				if (mainApp.loadedFolder.compareTo(folderSelect.getSelectedItem())!=0) {
 					currentPage = 1;
 					pageLbl.setText("Current Page: " + currentPage);
 				}
 				
-				folderIndex = new DList();
-				loadedFolder = folderSelect.getSelectedItem();
-				File currentFile = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\"+ loadedFolder);
-				File currentIndex = new File(currentFile , "mailsfile.txt");
-				Scanner myreader;
+				mainApp.folderIndex = new DList();
+				mainApp.loadedFolder = folderSelect.getSelectedItem();
+				currentFolder = new Folder("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\" + mainApp.loadedFolder);
+				mainApp.setViewingOptions(currentFolder, filterKey, sortType);
 				
-				try {	
-					myreader = new Scanner(currentIndex);
-					while(myreader.hasNextLine()) {
-						String data=myreader.nextLine();
-						if (data.isBlank()) {
-							break;
-						}
-						IndexMail load = new IndexMail();
-						load.setMailName(data);
-						load.setPriority(Integer.parseInt(myreader.nextLine()));
-						load.setFrom(myreader.nextLine());
-						load.setTo(myreader.nextLine());
-						load.setSubject(myreader.nextLine());
-						folderIndex.add(0, load);		
-					}
-					myreader.close();
-				}		
-				catch (FileNotFoundException ee) {
-				
-				}
-				pagesPerFolder = (folderIndex.size( )/ mailsPerPage);
-				lastPageMails = folderIndex.size() % mailsPerPage;
-				if (lastPageMails > 0) {
-					pagesPerFolder++;
-				}
-				pageStart = (currentPage - 1)*mailsPerPage;
-				if (lastPageMails > 0 && currentPage == pagesPerFolder) {
-					pageEnd = (pageStart + lastPageMails) - 1 ;
+				//Show restore button if loaded folder is Trash folder and hide it otherwise
+				if (mainApp.loadedFolder.compareTo("Trash")==0) {
+					btnRestoreSelectedEmails.setVisible(true);
 				}
 				else {
-					pageEnd = (currentPage * mailsPerPage) - 1;
+					btnRestoreSelectedEmails.setVisible(false);
 				}
 				
-				pageArray = new IndexMail[mailsPerPage];
-				if(!folderIndex.isEmpty()) {
-					for(int i = pageStart , j = 0 ; i <= pageEnd && j < mailsPerPage ; i++ , j++) {
-						pageArray[j] = (IndexMail) folderIndex.get(i);
-					}
-				}
 				
-				for (int i = 0 ; i < mailsPerPage ; i++) {
+				//mainApp.loadEmails();
+				pageArray = (Mail[]) mainApp.listEmails(currentPage);
+				
+				for (int i = 0 ; i < mainApp.mailsPerPage ; i++) {
 					for (int j = 1; j < 6 ; j++) {
 						if (pageArray[i]!=null) {
 							String add = "";
@@ -486,7 +385,7 @@ public class MainHub extends JFrame {
 		composeBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String[] data = new String[2];
-				data[0] = currentUser.getemail();
+				data[0] = mainApp.currentUser.getemail();
 				data[1] = null;
 				ComposeMessage.main(data);
 				
@@ -501,7 +400,7 @@ public class MainHub extends JFrame {
 		nextBtn.setForeground(Color.WHITE);
 		nextBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (currentPage < pagesPerFolder) {
+				if (currentPage < mainApp.pagesPerFolder) {
 					currentPage ++;
 					pageLbl.setText("Current Page: " + currentPage);
 					updateTable.itemStateChanged(null);
@@ -543,10 +442,10 @@ public class MainHub extends JFrame {
 		lblSearch.setBounds(263, 59, 70, 23);
 		contentPane.add(lblSearch);
 		
-		textField = new JTextField();
-		textField.setBounds(372, 40, 391, 42);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		searchField = new JTextField();
+		searchField.setBounds(372, 40, 334, 42);
+		contentPane.add(searchField);
+		searchField.setColumns(10);
 		
 		lblSort = new JLabel("Sort According To");
 		lblSort.setHorizontalAlignment(SwingConstants.CENTER);
@@ -561,21 +460,34 @@ public class MainHub extends JFrame {
 		sort.add("Oldest first");
 		sort.add("Alphabetical Order");
 		sort.add("Reverse Alphabetical Order");
+		sort.add("Highest Priority first");
+		sort.add("Lowest Priority first");
 		sort.setBounds(436, 130, 267, 40);
+		ItemListener updateSort = new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				//Sort 
+				sortString = sort.getSelectedItem();
+				//Method convert sortString to integer
+				sortType.sortCode = Sort.chooseSortCode(sortString);
+				mainApp.setViewingOptions(currentFolder, filterKey, sortType);
+				updateTable.itemStateChanged(null);
+					
+			}};
+			sort.addItemListener(updateSort);
 		contentPane.add(sort);
 		
 		refreshBtn = new JButton("");
 		refreshBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//dispose();
-				//String[] user = new String[6];
-				//user[0] = currentUser.getname();
-				//user[1] = currentUser.getemail();
-				//user[2] = currentUser.getpassword();
-				//user[3] = loadedFolder;
-				//user[4] = "" + currentPage;
+				//Search
+				String searchText = searchField.getText();
+				filterKey.setText(searchText);
+				//Sort 
+				sortString = sort.getSelectedItem();
+				//Method convert sortString to integer
+				sortType.sortCode = Sort.chooseSortCode(sortString);
+				mainApp.setViewingOptions(currentFolder, filterKey, sortType);
 				updateTable.itemStateChanged(null);
-				//MainHub.main(user);
 			}
 		});
 		refreshBtn.setIcon(new ImageIcon(MainHub.class.getResource("/Images/refresh.jpg")));
@@ -588,7 +500,7 @@ public class MainHub extends JFrame {
 		contactBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String[] data = new String[1];
-				data[0] = currentUser.getemail();
+				data[0] = mainApp.currentUser.getemail();
 				Contacts.main(data);
 				
 			}
@@ -599,7 +511,7 @@ public class MainHub extends JFrame {
 		contactBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		contactBtn.setBackground(SystemColor.textHighlight);
 		
-		lblName = new JLabel(currentUser.getname());
+		lblName = new JLabel(mainApp.currentUser.getname());
 		lblName.setHorizontalAlignment(SwingConstants.LEFT);
 		lblName.setFont(new Font("Agency FB", Font.BOLD, 28));
 		lblName.setForeground(new Color(240, 255, 255));
@@ -628,7 +540,7 @@ public class MainHub extends JFrame {
 				if (acceptableFolder == true) {
 					int dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to create the selected folder\""+folderName+"\"?","Confirmation",JOptionPane.YES_NO_OPTION);
 					if(dialogResult == JOptionPane.YES_OPTION) {
-						File newFolder = new File("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders" , folderName);
+						File newFolder = new File("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders" , folderName);
 						newFolder.mkdir();
 						File mailsFile = new File(newFolder, "mailsfile.txt");
 						try {
@@ -662,7 +574,7 @@ public class MainHub extends JFrame {
 					int dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete the selected folder\""+selectedFolder+"\"?","Confirmation",JOptionPane.YES_NO_OPTION);
 					if(dialogResult == JOptionPane.YES_OPTION) {
 						folderSelect.remove(selectedFolder);
-						File deleted = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\" + selectedFolder);
+						File deleted = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\" + selectedFolder);
 						Folder.deleteFolder(deleted);
 						folderSelect.select("Inbox");
 						updateTable.itemStateChanged(null);
@@ -707,8 +619,8 @@ public class MainHub extends JFrame {
 									int index = folderSelect.getSelectedIndex();
 									folderSelect.remove(index);
 									folderSelect.insert(folderName, index);
-									File old = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\" + selectedFolder);
-									File renamed = new File ("D:\\MailServerData\\" + currentUser.getemail() + "\\Mail Folders\\" + folderName);
+									File old = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\" + selectedFolder);
+									File renamed = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\" + folderName);
 									old.renameTo(renamed);
 								}
 								addFolderTxt.setText(null);
@@ -725,6 +637,151 @@ public class MainHub extends JFrame {
 		btnRenameFolder.setBackground(SystemColor.textHighlight);
 		btnRenameFolder.setBounds(30, 356, 194, 42);
 		contentPane.add(btnRenameFolder);
+		
+		btnMoveSelectedEmails = new JButton("Move Selected Emails");
+		btnMoveSelectedEmails.setForeground(Color.WHITE);
+		btnMoveSelectedEmails.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+		btnMoveSelectedEmails.setBackground(SystemColor.textHighlight);
+		btnMoveSelectedEmails.setBounds(283, 475, 174, 42);
+		btnMoveSelectedEmails.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				selectedEmails.clear();
+				for (int i = 0 ; i < mainApp.mailsPerPage ; i++) {
+					Object tmp = modelShowEmail.getValueAt(i, 0);
+					try {
+						boolean select = (boolean)tmp;
+						File selectedFile = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder +"\\" + pageArray[i].getMailName() );
+						selectedEmails.add(selectedFile);
+					}
+					catch (Exception eeeeee) {
+					
+					}
+				}
+				if(!selectedEmails.isEmpty()) {
+					int acceptableMoves = folderSelect.countItems()-1;
+					String[] folders = new String[acceptableMoves];
+					for (int i = 0, j = 0 ; i < acceptableMoves && j < folderSelect.countItems() ; j++) {
+						String name = (String)folderSelect.getItem(j);
+						if (name.compareTo(mainApp.loadedFolder)!=0) {
+							folders[i] = name;
+							i++;
+						}
+					}
+					String dest = (String)JOptionPane.showInputDialog(null,"Move the selected email(s) to", "Select Folder",JOptionPane.INFORMATION_MESSAGE,null, folders, folders[0]);
+
+					
+					if ((dest != null) && (dest.length() > 0)) {
+					    Folder destinationFolder = new Folder("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ dest);
+
+					    mainApp.moveEmails(selectedEmails, destinationFolder);
+					}
+					updateTable.itemStateChanged(null);
+					
+				}
+				else {
+					JOptionPane.showMessageDialog(null,"No emails selected.","Error",JOptionPane.ERROR_MESSAGE);
+				}
+				
+				
+			}
+		});
+		contentPane.add(btnMoveSelectedEmails);
+		
+		btnDeleteSelectedEmails = new JButton("Delete Selected Emails");
+		btnDeleteSelectedEmails.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+					selectedEmails.clear();
+					for (int i = 0 ; i < mainApp.mailsPerPage ; i++) {
+						Object tmp = modelShowEmail.getValueAt(i, 0);
+						try {
+							boolean select = (boolean)tmp;
+							File selectedFile = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder +"\\" + pageArray[i].getMailName() );
+							selectedEmails.add(selectedFile);
+						}
+						catch (Exception eeeee) {
+						
+						}
+					}
+					if(!selectedEmails.isEmpty()) {
+						int dialogResult;
+						if (mainApp.loadedFolder.compareTo("Trash")!=0){
+							dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete the selected email(s)?","Confirmation",JOptionPane.YES_NO_OPTION);
+							
+						}
+						else {
+							dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to permanently delete the selected email(s)?","Confirmation",JOptionPane.YES_NO_OPTION);
+						}
+						if(dialogResult == JOptionPane.YES_OPTION) {
+
+							mainApp.deleteEmails(selectedEmails);
+							updateTable.itemStateChanged(null);
+						}
+					}
+					else {
+						JOptionPane.showMessageDialog(null,"No emails selected.","Error",JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			
+		});
+		btnDeleteSelectedEmails.setForeground(Color.WHITE);
+		btnDeleteSelectedEmails.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+		btnDeleteSelectedEmails.setBackground(SystemColor.textHighlight);
+		btnDeleteSelectedEmails.setBounds(716, 475, 174, 42);
+		contentPane.add(btnDeleteSelectedEmails);
+		
+		btnRestoreSelectedEmails = new JButton("Restore Selected Emails");
+		btnRestoreSelectedEmails.setVisible(false);
+		btnRestoreSelectedEmails.setForeground(Color.WHITE);
+		btnRestoreSelectedEmails.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+		btnRestoreSelectedEmails.setBackground(SystemColor.textHighlight);
+		btnRestoreSelectedEmails.setBounds(492, 475, 194, 42);
+		btnRestoreSelectedEmails.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				selectedEmails.clear();
+				for (int i = 0 ; i < mainApp.mailsPerPage ; i++) {
+					Object tmp = modelShowEmail.getValueAt(i, 0);
+					try {
+						boolean select = (boolean)tmp;
+						File selectedFile = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder +"\\" + pageArray[i].getMailName() );
+						selectedEmails.add(selectedFile);
+					}
+					catch (Exception eeeee) {
+					
+					}
+				}
+				if(!selectedEmails.isEmpty()) {
+					int dialogResult;
+					dialogResult = JOptionPane.showConfirmDialog(null,"Are you sure you want to restore the selected email(s)?","Confirmation",JOptionPane.YES_NO_OPTION);
+					if(dialogResult == JOptionPane.YES_OPTION) {
+						mainApp.restoreEmails(selectedEmails);
+						updateTable.itemStateChanged(null);
+					}
+				}
+				else {
+					JOptionPane.showMessageDialog(null,"No emails selected.","Error",JOptionPane.ERROR_MESSAGE);
+				}
+			}
+				
+		});
+		contentPane.add(btnRestoreSelectedEmails);
+		
+		btnSearch = new JButton("Search");
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String searchText = searchField.getText();
+				filterKey.setText(searchText);
+				mainApp.setViewingOptions(currentFolder, filterKey, sortType);
+				updateTable.itemStateChanged(null);
+			}
+		});
+		btnSearch.setForeground(Color.WHITE);
+		btnSearch.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
+		btnSearch.setBackground(SystemColor.textHighlight);
+		btnSearch.setBounds(718, 40, 144, 42);
+		contentPane.add(btnSearch);
 		
 		bgImage = new JLabel("");
 		bgImage.setIcon(new ImageIcon(MainHub.class.getResource("/Images/opening-email-ss-1920.jpg")));
