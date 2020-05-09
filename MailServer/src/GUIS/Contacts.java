@@ -59,6 +59,7 @@ public class Contacts extends JFrame {
 	private JTextField name;
 	private static DefaultListModel DLM=new DefaultListModel();
 	private static DefaultListModel DLM2=new DefaultListModel();
+	private static DefaultListModel DLM3=new DefaultListModel();
 	private static JList Emails=new JList();
 	private static JList Names=new JList();
 	private static String accountName;
@@ -91,8 +92,7 @@ public class Contacts extends JFrame {
 	String[] names=myobj.list();
 	
 	for(String name : names) {
-		String filename = name.split("\\.")[0];
-	//	filename=Contact.toDate(filename);
+		String filename = name.replaceAll(".txt","");
 		DLM.addElement(filename);	
 		}
 	Names.setModel(DLM);
@@ -127,9 +127,24 @@ public class Contacts extends JFrame {
 		}
 	
 	
+	void refreshList() {
+		DLM.clear();
+		DLM2.clear();
+		File myobj =new File("D:\\MailServerData\\"+accountName+"\\contacts");
+		String[] names=myobj.list();
+		
+		for(String name : names) {
+			String filename = name.replaceAll(".txt","");
+			DLM.addElement(filename);	
+			}
+			showcontact.setText("");
+			showmail.setText("");
+	}
 	public Contacts() {
 		
 		
+
+
 		
 	    ListSelectionListener listSelectionListener1 = new ListSelectionListener() {
 		       
@@ -200,11 +215,39 @@ public class Contacts extends JFrame {
 				}
 				}
 				else {
-					JOptionPane.showMessageDialog(null,"Please Select a Contact !");
+					if(Names.getSelectedValue()==null) {
+					JOptionPane.showMessageDialog(null,"Please Select a First !");
+					}else {
+						JOptionPane.showMessageDialog(null,"Please Select an E-mail !");
+					}
 				}
 				
 			}
 		});
+		
+		JLabel lblUserName_1_1 = new JLabel("E-Mails");
+		lblUserName_1_1.setForeground(Color.WHITE);
+		lblUserName_1_1.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblUserName_1_1.setBounds(212, 91, 147, 38);
+		contentPane.add(lblUserName_1_1);
+		
+		JLabel lblContacts_1 = new JLabel("Contacts");
+		lblContacts_1.setForeground(Color.WHITE);
+		lblContacts_1.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblContacts_1.setBounds(10, 91, 147, 38);
+		contentPane.add(lblContacts_1);
+		
+		JButton btnRefreshList = new JButton("Refresh List");
+		btnRefreshList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			refreshList();
+			}
+		});
+		btnRefreshList.setForeground(Color.WHITE);
+		btnRefreshList.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		btnRefreshList.setBackground(SystemColor.textHighlight);
+		btnRefreshList.setBounds(106, 51, 147, 44);
+		contentPane.add(btnRefreshList);
 		
 		JLabel lblExtraEmailName = new JLabel("Extra Email Name");
 		lblExtraEmailName.setForeground(Color.WHITE);
@@ -379,7 +422,8 @@ public class Contacts extends JFrame {
 				String newName=name.getText()+"                                    "+String.valueOf(curr);
 				String newEmail=email.getText();
 				if(!(name.getText().isBlank()) && !(email.getText().isBlank())) {
-				if(Pattern.matches("^[a-zA-Z ]+$",name.getText())) {
+				//if(Pattern.matches("^[a-zA-Z ]+$",name.getText())) {
+					if(!(name.getText().contains(".txt"))) {
 					if(Mail.checkmail(newEmail)) {
 					if(Contact.existEmail(newEmail)) {
 						if(Contact.addContact(accountName,newName,newEmail)) {
@@ -402,7 +446,7 @@ public class Contacts extends JFrame {
 					 JOptionPane.showMessageDialog(null,"Invalid Email format !","Error",JOptionPane.ERROR_MESSAGE);
 				}
 			}else {
-				 JOptionPane.showMessageDialog(null,"Please enter Characters only !","Error",JOptionPane.ERROR_MESSAGE);
+				 JOptionPane.showMessageDialog(null,"\".txt\" is probhibted in contact names","Error",JOptionPane.ERROR_MESSAGE);
 			
 			}}
 			else {
@@ -423,54 +467,69 @@ public class Contacts extends JFrame {
 		JLabel lblSearch = new JLabel("Search Contact");
 		lblSearch.setForeground(Color.WHITE);
 		lblSearch.setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblSearch.setBounds(212, 9, 171, 43);
+		lblSearch.setBounds(311, 9, 171, 43);
 		contentPane.add(lblSearch);
 				
 	searchContact = new JTextField();
 	searchContact.setColumns(10);
-	searchContact.setBounds(387, 9, 194, 44);
+	searchContact.setBounds(492, 9, 194, 44);
 	contentPane.add(searchContact);
 					
 	btnSearch = new JButton("Search");
 	btnSearch.setForeground(Color.WHITE);
 	btnSearch.setFont(new Font("Tahoma", Font.PLAIN, 18));
 	btnSearch.setBackground(SystemColor.textHighlight);
-	btnSearch.setBounds(601, 8, 116, 44);
+	btnSearch.setBounds(713, 9, 116, 44);
 	btnSearch.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			if(Pattern.matches("^[a-zA-Z ]+$",searchContact.getText())) {
+			boolean found=false;
+			if(!(searchContact.getText().isBlank())) {
 			String search = searchContact.getText();
+			search.replaceAll(" ","");
 			File myobj =new File("D:\\MailServerData\\"+accountName+"\\contacts");
 			String[] contacts = myobj.list();
 			if (contacts.length!=0) {
 				DLM.clear();
 				DLM2.clear();
 				for (int i = 0 ; i < contacts.length ; i ++) {
+					contacts[i]=contacts[i].replaceAll(".txt","");
 					String name = contacts[i];
+					String[] con =(name).split("\\s+");
+					name="";
+					for(int j =0 ; j < con.length-1;j++){
+						name+=con[j];
+					}
 					if (name.contains(search)==true) {
+						found=true;
 						DLM.addElement(contacts[i]);
 					}
+				}
+				if(!found) {
+					refreshList();
+					JOptionPane.showMessageDialog(null,"No result Found !");
 				}
 				
 			}
 
 			changeSort.itemStateChanged(null);
 			}else {
-				JOptionPane.showMessageDialog(null,"No Result Found !");
+				refreshList();
+				JOptionPane.showMessageDialog(null,"Please Fill Serach Field");
+				
 			}
 			}
 	});
 	
 	contentPane.add(btnSearch);
 								
-	JLabel lblSort = new JLabel("Sort");
+	JLabel lblSort = new JLabel(" Sort Contacts");
 	lblSort.setForeground(Color.WHITE);
 	lblSort.setFont(new Font("Tahoma", Font.BOLD, 20));
-	lblSort.setBounds(250, 47, 53, 43);
+	lblSort.setBounds(308, 51, 140, 43);
 	contentPane.add(lblSort);
 										
 	sort = new Choice();
-	sort.setBounds(387, 59, 194, 20);
+	sort.setBounds(492, 63, 194, 20);
 	sort.add("Alphabetical Order");
 	sort.add("Reverse Alphabetical Order");
 	changeSort = new ItemListener() {
@@ -480,9 +539,7 @@ public class Contacts extends JFrame {
 				contacts[i] = (String)DLM.get(i);
 			}
 			if (contacts.length!=0) {
-				for (int i = 0 ; i < contacts.length ; i ++) {
-					contacts[i] = contacts[i].split("\\.")[0];
-				}
+
 				Sort.quickSort(contacts, 0);
 				DLM.clear();
 				if (sort.getSelectedItem().compareTo("Alphabetical Order")==0) {
@@ -514,7 +571,7 @@ public class Contacts extends JFrame {
 											
 	contentPane.add(LblImage);
 	
-		
+	
 	
 	
 	}

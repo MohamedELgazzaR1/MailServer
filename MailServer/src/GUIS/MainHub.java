@@ -94,6 +94,7 @@ public class MainHub extends JFrame {
 	private Folder currentFolder;
 	private Sort sortType = new Sort();
 	private Filter filterKey;
+	private JButton btnNewButton;
 	
 	/**
 	 * Launch the application.
@@ -125,6 +126,18 @@ public class MainHub extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		btnNewButton = new JButton("Sign out");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Home.main(null);
+				setVisible(false);
+			}
+		});
+		btnNewButton.setForeground(Color.WHITE);
+		btnNewButton.setBackground(SystemColor.textHighlight);
+		btnNewButton.setBounds(883, 11, 113, 41);
+		contentPane.add(btnNewButton);
 		
 		
 		
@@ -331,6 +344,13 @@ public class MainHub extends JFrame {
 					btnRestoreSelectedEmails.setVisible(false);
 				}
 				
+				if (mainApp.loadedFolder.compareTo("Draft") != 0) {
+					btnMoveSelectedEmails.setVisible(true);
+				}
+				else {
+					btnMoveSelectedEmails.setVisible(false);
+				}
+				
 				
 				//mainApp.loadEmails();
 				pageArray = (Mail[]) mainApp.listEmails(currentPage);
@@ -493,7 +513,7 @@ public class MainHub extends JFrame {
 		refreshBtn.setIcon(new ImageIcon(MainHub.class.getResource("/Images/refresh.jpg")));
 		refreshBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		refreshBtn.setBackground(Color.WHITE);
-		refreshBtn.setBounds(889, 16, 54, 40);
+		refreshBtn.setBounds(913, 76, 54, 40);
 		contentPane.add(refreshBtn);
 		
 		contactBtn = new JButton("Contacts");
@@ -663,7 +683,7 @@ public class MainHub extends JFrame {
 					String[] folders = new String[acceptableMoves];
 					for (int i = 0, j = 0 ; i < acceptableMoves && j < folderSelect.countItems() ; j++) {
 						String name = (String)folderSelect.getItem(j);
-						if (name.compareTo(mainApp.loadedFolder)!=0) {
+						if (name.compareTo(mainApp.loadedFolder)!=0 && name.compareTo("Draft") != 0) {
 							folders[i] = name;
 							i++;
 						}
