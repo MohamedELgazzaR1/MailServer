@@ -192,8 +192,8 @@ public class MainHub extends JFrame {
 		};
 		table.setModel(modelShowEmail);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getColumnModel().getColumn(0).setPreferredWidth(47);
-		table.getColumnModel().getColumn(1).setPreferredWidth(47);
+		table.getColumnModel().getColumn(0).setPreferredWidth(35);
+		table.getColumnModel().getColumn(1).setPreferredWidth(60);
 		table.getColumnModel().getColumn(2).setPreferredWidth(130);
 		table.getColumnModel().getColumn(3).setPreferredWidth(140);
 		table.getColumnModel().getColumn(4).setPreferredWidth(140);
@@ -360,7 +360,7 @@ public class MainHub extends JFrame {
 						if (pageArray[i]!=null) {
 							String add = "";
 							if (j==1) {
-								add = "" + pageArray[i].getPriority();
+								add = Mail.getPriority(pageArray[i].getPriority());
 
 							}
 							else if (j==2) {
