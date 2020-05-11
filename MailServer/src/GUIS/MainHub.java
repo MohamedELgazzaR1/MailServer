@@ -177,7 +177,7 @@ public class MainHub extends JFrame {
 				}
 			) {
 				Class[] columnTypes = new Class[] {
-					Boolean.class, Integer.class, String.class, String.class, String.class, String.class
+					Boolean.class, String.class, String.class, String.class, String.class, String.class
 				};
 				public Class getColumnClass(int columnIndex) {
 					return columnTypes[columnIndex];
