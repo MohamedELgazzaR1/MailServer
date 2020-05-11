@@ -208,11 +208,17 @@ public class MainHub extends JFrame {
 		        Point point = mouseEvent.getPoint();
 		        int row = table.rowAtPoint(point);
 		        if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-		           int index = table.getSelectedRow();
-		           File email = new File("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder,pageArray[index].getMailName());
-		           File contents = new File(email,"indexfile.txt");
-		           File attachments = new File(email,"Attachments");
-		           Scanner myreader;
+		        	int index = table.getSelectedRow();
+			        File email;
+		        	try {
+			           email = new File("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder,pageArray[index].getMailName()); 
+		        	} catch (Exception eeeeeeeee) {
+						JOptionPane.showMessageDialog(null,"Can not choose an empty row.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+		        	File contents = new File(email,"indexfile.txt");
+			        File attachments = new File(email,"Attachments");
+			        Scanner myreader;
 		   		
 		   		try {	
 		   			myreader = new Scanner(contents);
@@ -678,7 +684,8 @@ public class MainHub extends JFrame {
 						selectedEmails.add(selectedFile);
 					}
 					catch (Exception eeeeee) {
-					
+						JOptionPane.showMessageDialog(null,"Can not choose an empty row.","Error",JOptionPane.ERROR_MESSAGE);
+						return;
 					}
 				}
 				if(!selectedEmails.isEmpty()) {
