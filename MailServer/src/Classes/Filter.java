@@ -38,6 +38,9 @@ public class Filter implements IFilter{
 			} else if (code == 6) {
 				out = -1 * (x.getPriority() - y.getPriority());
 			}
+			if (out == 0) {
+				out = -1 * x.getMailName().compareTo(y.getMailName());
+			}
 		}
 		return out;
 	}
