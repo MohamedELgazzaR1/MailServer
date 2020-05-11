@@ -259,7 +259,7 @@ public class MainHub extends JFrame {
 				if (pageArray[i]!=null) {
 					String add = "";
 					if (j==1) {
-						add = "" + pageArray[i].getPriority();
+						add = Mail.getPriority(pageArray[i].getPriority());
 
 					}
 					else if (j==2) {
