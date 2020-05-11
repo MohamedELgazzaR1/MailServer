@@ -2,6 +2,8 @@ package Classes;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 import Interfaces.IFilter;
@@ -37,6 +39,9 @@ public class Filter implements IFilter{
 				out = x.getPriority() - y.getPriority();
 			} else if (code == 6) {
 				out = -1 * (x.getPriority() - y.getPriority());
+			}
+			if (out == 0) {
+				out = -1 * x.getMailName().compareTo(y.getMailName());
 			}
 		}
 		return out;
@@ -92,7 +97,33 @@ public class Filter implements IFilter{
 					}
 					scan.close();
 				} catch (FileNotFoundException e) {
-					return null;
+					try {
+						currentfile.createNewFile();
+						File mailsfile = new File(currentfolder, "mailsfile.txt");
+						FileWriter wrt = new FileWriter(currentfile, true);
+						Scanner scan2 = new Scanner(mailsfile);
+						while(scan2.hasNextLine()) {
+							String input = scan2.nextLine();
+							if (input.compareTo(folderslist[i].getName()) == 0) {
+								wrt.write(input + "\n");
+								String prio = scan2.nextLine();
+								wrt.write(scan2.nextLine() + "\n");
+								wrt.write(scan2.nextLine() + "\n");
+								wrt.write(prio + "\n");
+								wrt.write(scan2.nextLine() + "\n");
+								wrt.write("\n\n\n");
+								break;
+							}
+						}
+						scan2.close();
+						wrt.close();
+						File attt = new File(folderslist[i], "Attachments");
+						attt.mkdir();
+						i--;
+					} catch (IOException e1) {
+						
+					}
+					
 				}
 			}
 		}
