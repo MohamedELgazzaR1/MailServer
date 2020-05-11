@@ -678,14 +678,17 @@ public class MainHub extends JFrame {
 				selectedEmails.clear();
 				for (int i = 0 ; i < mainApp.mailsPerPage ; i++) {
 					Object tmp = modelShowEmail.getValueAt(i, 0);
-					try {
-						boolean select = (boolean)tmp;
-						File selectedFile = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder +"\\" + pageArray[i].getMailName() );
-						selectedEmails.add(selectedFile);
-					}
-					catch (Exception eeeeee) {
-						JOptionPane.showMessageDialog(null,"Can not choose an empty row.","Error",JOptionPane.ERROR_MESSAGE);
-						return;
+					
+					if (tmp != null && (boolean)tmp) {
+						try {
+							boolean select = (boolean)tmp;
+							File selectedFile = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder +"\\" + pageArray[i].getMailName() );
+							selectedEmails.add(selectedFile);
+						}
+						catch (Exception eeeeee) {
+							JOptionPane.showMessageDialog(null,"Can not choose an empty row.","Error",JOptionPane.ERROR_MESSAGE);
+							return;
+						}
 					}
 				}
 				if(!selectedEmails.isEmpty()) {
@@ -725,13 +728,16 @@ public class MainHub extends JFrame {
 					selectedEmails.clear();
 					for (int i = 0 ; i < mainApp.mailsPerPage ; i++) {
 						Object tmp = modelShowEmail.getValueAt(i, 0);
-						try {
-							boolean select = (boolean)tmp;
-							File selectedFile = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder +"\\" + pageArray[i].getMailName() );
-							selectedEmails.add(selectedFile);
-						}
-						catch (Exception eeeee) {
-						
+						if (tmp != null && (boolean)tmp) {
+							try {
+								boolean select = (boolean)tmp;
+								File selectedFile = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder +"\\" + pageArray[i].getMailName() );
+								selectedEmails.add(selectedFile);
+							}
+							catch (Exception eeeee) {
+								JOptionPane.showMessageDialog(null,"Can not choose an empty row.","Error",JOptionPane.ERROR_MESSAGE);
+								return;
+							}
 						}
 					}
 					if(!selectedEmails.isEmpty()) {
@@ -773,13 +779,16 @@ public class MainHub extends JFrame {
 				selectedEmails.clear();
 				for (int i = 0 ; i < mainApp.mailsPerPage ; i++) {
 					Object tmp = modelShowEmail.getValueAt(i, 0);
-					try {
-						boolean select = (boolean)tmp;
-						File selectedFile = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder +"\\" + pageArray[i].getMailName() );
-						selectedEmails.add(selectedFile);
-					}
-					catch (Exception eeeee) {
-					
+					if (tmp != null && (boolean)tmp) {
+						try {
+							boolean select = (boolean)tmp;
+							File selectedFile = new File ("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\"+ mainApp.loadedFolder +"\\" + pageArray[i].getMailName() );
+							selectedEmails.add(selectedFile);
+						}
+						catch (Exception eeeee) {
+							JOptionPane.showMessageDialog(null,"Can not choose an empty row.","Error",JOptionPane.ERROR_MESSAGE);
+							return;
+						}
 					}
 				}
 				if(!selectedEmails.isEmpty()) {
