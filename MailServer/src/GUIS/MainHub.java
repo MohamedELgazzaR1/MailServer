@@ -94,6 +94,7 @@ public class MainHub extends JFrame {
 	private Folder currentFolder;
 	private Sort sortType = new Sort();
 	private Filter filterKey;
+	private JButton btnNewButton;
 	
 	/**
 	 * Launch the application.
@@ -118,6 +119,7 @@ public class MainHub extends JFrame {
 	 * Create the frame.
 	 */
 	public MainHub() {
+		setTitle("CSED2023-" + mainApp.currentUser.getname());
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1025, 621);
@@ -126,10 +128,22 @@ public class MainHub extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
+		btnNewButton = new JButton("Sign out");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Home.main(null);
+				setVisible(false);
+			}
+		});
+		btnNewButton.setForeground(Color.WHITE);
+		btnNewButton.setBackground(SystemColor.textHighlight);
+		btnNewButton.setBounds(883, 11, 113, 41);
+		contentPane.add(btnNewButton);
+		
 		
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(259, 200, 708, 264);
+		scrollPane.setBounds(274, 194, 708, 264);
 		contentPane.add(scrollPane);
 		//First load
 		sortType.sortCode = 1;
@@ -164,7 +178,7 @@ public class MainHub extends JFrame {
 				}
 			) {
 				Class[] columnTypes = new Class[] {
-					Boolean.class, Integer.class, String.class, String.class, String.class, String.class
+					Boolean.class, String.class, String.class, String.class, String.class, String.class
 				};
 				public Class getColumnClass(int columnIndex) {
 					return columnTypes[columnIndex];
@@ -179,8 +193,8 @@ public class MainHub extends JFrame {
 		};
 		table.setModel(modelShowEmail);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getColumnModel().getColumn(0).setPreferredWidth(47);
-		table.getColumnModel().getColumn(1).setPreferredWidth(47);
+		table.getColumnModel().getColumn(0).setPreferredWidth(35);
+		table.getColumnModel().getColumn(1).setPreferredWidth(60);
 		table.getColumnModel().getColumn(2).setPreferredWidth(130);
 		table.getColumnModel().getColumn(3).setPreferredWidth(140);
 		table.getColumnModel().getColumn(4).setPreferredWidth(140);
@@ -246,7 +260,7 @@ public class MainHub extends JFrame {
 				if (pageArray[i]!=null) {
 					String add = "";
 					if (j==1) {
-						add = "" + pageArray[i].getPriority();
+						add = Mail.getPriority(pageArray[i].getPriority());
 
 					}
 					else if (j==2) {
@@ -279,24 +293,24 @@ public class MainHub extends JFrame {
 		lblFolderName.setForeground(Color.WHITE);
 		lblFolderName.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblFolderName.setBackground(Color.WHITE);
-		lblFolderName.setBounds(12, 412, 83, 31);
+		lblFolderName.setBounds(12, 383, 83, 31);
 		contentPane.add(lblFolderName);
 		
 		addFolderTxt = new JTextField();
 		addFolderTxt.setColumns(10);
-		addFolderTxt.setBounds(104, 410, 145, 33);
+		addFolderTxt.setBounds(104, 388, 145, 23);
 		contentPane.add(addFolderTxt);
 		
-		lblSelectFolder = new JLabel("Select Folder");
+		lblSelectFolder = new JLabel("Folder");
 		lblSelectFolder.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSelectFolder.setForeground(Color.WHITE);
 		lblSelectFolder.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblSelectFolder.setBackground(Color.WHITE);
-		lblSelectFolder.setBounds(12, 456, 113, 23);
+		lblSelectFolder.setBounds(12, 240, 70, 23);
 		contentPane.add(lblSelectFolder);
 		
 		folderSelect = new Choice();
-		folderSelect.setBounds(30, 485, 219, 40);
+		folderSelect.setBounds(90, 245, 145, 18);
 		contentPane.add(folderSelect);
 		
 		for (int i = 1; i <= mainApp.folderList.size() ; i++) {
@@ -321,6 +335,8 @@ public class MainHub extends JFrame {
 				mainApp.folderIndex = new DList();
 				mainApp.loadedFolder = folderSelect.getSelectedItem();
 				currentFolder = new Folder("D:\\MailServerData\\" + mainApp.currentUser.getemail() + "\\Mail Folders\\" + mainApp.loadedFolder);
+				sortString = sort.getSelectedItem();
+				sortType.sortCode = Sort.chooseSortCode(sortString);
 				mainApp.setViewingOptions(currentFolder, filterKey, sortType);
 				
 				//Show restore button if loaded folder is Trash folder and hide it otherwise
@@ -329,6 +345,13 @@ public class MainHub extends JFrame {
 				}
 				else {
 					btnRestoreSelectedEmails.setVisible(false);
+				}
+				
+				if (mainApp.loadedFolder.compareTo("Draft") != 0) {
+					btnMoveSelectedEmails.setVisible(true);
+				}
+				else {
+					btnMoveSelectedEmails.setVisible(false);
 				}
 				
 				
@@ -340,7 +363,7 @@ public class MainHub extends JFrame {
 						if (pageArray[i]!=null) {
 							String add = "";
 							if (j==1) {
-								add = "" + pageArray[i].getPriority();
+								add = Mail.getPriority(pageArray[i].getPriority());
 
 							}
 							else if (j==2) {
@@ -393,10 +416,10 @@ public class MainHub extends JFrame {
 		});
 		composeBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		composeBtn.setBackground(SystemColor.textHighlight);
-		composeBtn.setBounds(30, 248, 144, 42);
+		composeBtn.setBounds(53, 143, 144, 42);
 		contentPane.add(composeBtn);
 		
-		nextBtn = new JButton("Next Page");
+		nextBtn = new JButton("-->");
 		nextBtn.setForeground(Color.WHITE);
 		nextBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -408,10 +431,10 @@ public class MainHub extends JFrame {
 			}
 		});
 		nextBtn.setBackground(SystemColor.textHighlight);
-		nextBtn.setBounds(731, 538, 131, 23);
+		nextBtn.setBounds(903, 523, 62, 23);
 		contentPane.add(nextBtn);
 		
-		prevBtn = new JButton("Previous Page");
+		prevBtn = new JButton("<--");
 		prevBtn.setForeground(Color.WHITE);
 		prevBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -424,22 +447,22 @@ public class MainHub extends JFrame {
 			}
 		});
 		prevBtn.setBackground(SystemColor.textHighlight);
-		prevBtn.setBounds(292, 538, 131, 23);
+		prevBtn.setBounds(838, 523, 62, 23);
 		contentPane.add(prevBtn);
 		
 		pageLbl = new JLabel("Current Page: " + currentPage);
 		pageLbl.setForeground(Color.WHITE);
 		pageLbl.setFont(new Font("Tahoma", Font.BOLD, 16));
 		pageLbl.setBackground(Color.WHITE);
-		pageLbl.setBounds(507, 537, 154, 23);
+		pageLbl.setBounds(828, 490, 154, 23);
 		contentPane.add(pageLbl);
 		
-		lblSearch = new JLabel("Search");
+		lblSearch = new JLabel("Search:");
 		lblSearch.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSearch.setForeground(Color.WHITE);
 		lblSearch.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblSearch.setBackground(Color.WHITE);
-		lblSearch.setBounds(263, 59, 70, 23);
+		lblSearch.setBounds(292, 47, 70, 23);
 		contentPane.add(lblSearch);
 		
 		searchField = new JTextField();
@@ -447,12 +470,12 @@ public class MainHub extends JFrame {
 		contentPane.add(searchField);
 		searchField.setColumns(10);
 		
-		lblSort = new JLabel("Sort According To");
+		lblSort = new JLabel("Sort:");
 		lblSort.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSort.setForeground(Color.WHITE);
 		lblSort.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblSort.setBackground(Color.WHITE);
-		lblSort.setBounds(263, 129, 154, 23);
+		lblSort.setBounds(360, 125, 70, 23);
 		contentPane.add(lblSort);
 		
 		sort = new Choice();
@@ -493,7 +516,7 @@ public class MainHub extends JFrame {
 		refreshBtn.setIcon(new ImageIcon(MainHub.class.getResource("/Images/refresh.jpg")));
 		refreshBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		refreshBtn.setBackground(Color.WHITE);
-		refreshBtn.setBounds(889, 16, 54, 40);
+		refreshBtn.setBounds(918, 125, 54, 40);
 		contentPane.add(refreshBtn);
 		
 		contactBtn = new JButton("Contacts");
@@ -506,7 +529,7 @@ public class MainHub extends JFrame {
 			}
 		});
 		contactBtn.setForeground(Color.WHITE);
-		contactBtn.setBounds(30, 193, 144, 42);
+		contactBtn.setBounds(883, 62, 113, 42);
 		contentPane.add(contactBtn);
 		contactBtn.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		contactBtn.setBackground(SystemColor.textHighlight);
@@ -560,10 +583,10 @@ public class MainHub extends JFrame {
 		btnAddFolder.setForeground(Color.WHITE);
 		btnAddFolder.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnAddFolder.setBackground(SystemColor.textHighlight);
-		btnAddFolder.setBounds(30, 303, 144, 42);
+		btnAddFolder.setBounds(142, 329, 122, 29);
 		contentPane.add(btnAddFolder);
 		
-		btnDeleteSelectedFolder = new JButton("Delete Selected Folder");
+		btnDeleteSelectedFolder = new JButton("Delete Folder");
 		btnDeleteSelectedFolder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String selectedFolder = folderSelect.getSelectedItem();
@@ -586,10 +609,10 @@ public class MainHub extends JFrame {
 		btnDeleteSelectedFolder.setForeground(Color.WHITE);
 		btnDeleteSelectedFolder.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnDeleteSelectedFolder.setBackground(SystemColor.textHighlight);
-		btnDeleteSelectedFolder.setBounds(31, 519, 218, 42);
+		btnDeleteSelectedFolder.setBounds(73, 285, 116, 23);
 		contentPane.add(btnDeleteSelectedFolder);
 		
-		btnRenameFolder = new JButton("Rename Selected Folder");
+		btnRenameFolder = new JButton("Rename Folder");
 		btnRenameFolder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -635,14 +658,14 @@ public class MainHub extends JFrame {
 		btnRenameFolder.setForeground(Color.WHITE);
 		btnRenameFolder.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnRenameFolder.setBackground(SystemColor.textHighlight);
-		btnRenameFolder.setBounds(30, 356, 194, 42);
+		btnRenameFolder.setBounds(14, 329, 121, 29);
 		contentPane.add(btnRenameFolder);
 		
-		btnMoveSelectedEmails = new JButton("Move Selected Emails");
+		btnMoveSelectedEmails = new JButton("Move Emails");
 		btnMoveSelectedEmails.setForeground(Color.WHITE);
 		btnMoveSelectedEmails.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnMoveSelectedEmails.setBackground(SystemColor.textHighlight);
-		btnMoveSelectedEmails.setBounds(283, 475, 174, 42);
+		btnMoveSelectedEmails.setBounds(288, 494, 131, 42);
 		btnMoveSelectedEmails.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -663,7 +686,7 @@ public class MainHub extends JFrame {
 					String[] folders = new String[acceptableMoves];
 					for (int i = 0, j = 0 ; i < acceptableMoves && j < folderSelect.countItems() ; j++) {
 						String name = (String)folderSelect.getItem(j);
-						if (name.compareTo(mainApp.loadedFolder)!=0) {
+						if (name.compareTo(mainApp.loadedFolder)!=0 && name.compareTo("Draft") != 0) {
 							folders[i] = name;
 							i++;
 						}
@@ -688,7 +711,7 @@ public class MainHub extends JFrame {
 		});
 		contentPane.add(btnMoveSelectedEmails);
 		
-		btnDeleteSelectedEmails = new JButton("Delete Selected Emails");
+		btnDeleteSelectedEmails = new JButton("Delete Emails");
 		btnDeleteSelectedEmails.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -728,15 +751,15 @@ public class MainHub extends JFrame {
 		btnDeleteSelectedEmails.setForeground(Color.WHITE);
 		btnDeleteSelectedEmails.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnDeleteSelectedEmails.setBackground(SystemColor.textHighlight);
-		btnDeleteSelectedEmails.setBounds(716, 475, 174, 42);
+		btnDeleteSelectedEmails.setBounds(642, 494, 131, 42);
 		contentPane.add(btnDeleteSelectedEmails);
 		
-		btnRestoreSelectedEmails = new JButton("Restore Selected Emails");
+		btnRestoreSelectedEmails = new JButton("Restore Emails");
 		btnRestoreSelectedEmails.setVisible(false);
 		btnRestoreSelectedEmails.setForeground(Color.WHITE);
 		btnRestoreSelectedEmails.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnRestoreSelectedEmails.setBackground(SystemColor.textHighlight);
-		btnRestoreSelectedEmails.setBounds(492, 475, 194, 42);
+		btnRestoreSelectedEmails.setBounds(463, 494, 131, 42);
 		btnRestoreSelectedEmails.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -780,12 +803,12 @@ public class MainHub extends JFrame {
 		btnSearch.setForeground(Color.WHITE);
 		btnSearch.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 11));
 		btnSearch.setBackground(SystemColor.textHighlight);
-		btnSearch.setBounds(718, 40, 144, 42);
+		btnSearch.setBounds(705, 40, 83, 42);
 		contentPane.add(btnSearch);
 		
 		bgImage = new JLabel("");
 		bgImage.setIcon(new ImageIcon(MainHub.class.getResource("/Images/opening-email-ss-1920.jpg")));
-		bgImage.setBounds(0, -8, 1007, 592);
+		bgImage.setBounds(0, -8, 1043, 601);
 		contentPane.add(bgImage);
 	}
 }

@@ -98,6 +98,10 @@ public class Mail implements IMail{
 							JOptionPane.showMessageDialog(null, hold + " does not exist!","Error",JOptionPane.ERROR_MESSAGE);
 							return null;
 						}
+						if (hold.compareTo(currentmail) == 0) {
+							JOptionPane.showMessageDialog(null, "Can not send email to yourself.","Error",JOptionPane.ERROR_MESSAGE);
+							return null;
+						}
 						emailList.enqueue(hold);
 						hold = "";
 					}
@@ -111,6 +115,10 @@ public class Mail implements IMail{
 			} else {
 				if (Filter.binarySearch(existMails, hold) == -1) {
 					JOptionPane.showMessageDialog(null, hold + " does not exist!","Error",JOptionPane.ERROR_MESSAGE);
+					return null;
+				}
+				if (hold.compareTo(currentmail) == 0) {
+					JOptionPane.showMessageDialog(null, "Can not send email to yourself.","Error",JOptionPane.ERROR_MESSAGE);
 					return null;
 				}
 				emailList.enqueue(hold);

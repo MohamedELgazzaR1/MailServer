@@ -107,6 +107,7 @@ public class ComposeMessage extends JFrame{
 	 * Create the application.
 	 */
 	public ComposeMessage() {
+		setTitle("Message");
 		setResizable(false);
 		
 		setBounds(100, 100, 1025, 609);
@@ -116,10 +117,10 @@ public class ComposeMessage extends JFrame{
 		contentPane.setLayout(null);
 		
 		attachList = new Choice();
-		attachList.setBounds(609, 128, 167, 20);
+		attachList.setBounds(787, 27, 176, 18);
 		contentPane.add(attachList);
 		
-		btnViewAttachment = new JButton("View Selected Attachment");
+		btnViewAttachment = new JButton("View");
 		btnViewAttachment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String selectedAttach = attachList.getSelectedItem();
@@ -145,13 +146,13 @@ public class ComposeMessage extends JFrame{
 				}
 			}
 		});
-		btnViewAttachment.setBounds(782, 113, 191, 42);
+		btnViewAttachment.setBounds(741, 57, 160, 42);
 		btnViewAttachment.setForeground(Color.WHITE);
 		btnViewAttachment.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 9));
 		btnViewAttachment.setBackground(SystemColor.textHighlight);
 		contentPane.add(btnViewAttachment);
 		
-		btnClear = new JButton("Clear Text");
+		btnClear = new JButton("Clear");
 		btnClear.setBounds(21, 166, 104, 42);
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -246,8 +247,8 @@ public class ComposeMessage extends JFrame{
 		sendBtn.setBackground(SystemColor.textHighlight);
 		contentPane.add(sendBtn);
 		
-		addAttachBtn = new JButton("Add Attachment");
-		addAttachBtn.setBounds(782, 11, 191, 42);
+		addAttachBtn = new JButton("Add");
+		addAttachBtn.setBounds(692, 109, 124, 42);
 		addAttachBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser jf=new JFileChooser();
@@ -352,8 +353,8 @@ public class ComposeMessage extends JFrame{
 		priorityLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(priorityLbl);
 		
-		btnRemoveAttachment = new JButton("Remove Selected Attachment");
-		btnRemoveAttachment.setBounds(782, 60, 191, 42);
+		btnRemoveAttachment = new JButton("Remove");
+		btnRemoveAttachment.setBounds(839, 109, 124, 42);
 		btnRemoveAttachment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String selectedAttach = attachList.getSelectedItem();
@@ -381,8 +382,8 @@ public class ComposeMessage extends JFrame{
 		btnRemoveAttachment.setBackground(SystemColor.textHighlight);
 		contentPane.add(btnRemoveAttachment);
 		
-		lblAttachments = new JLabel("Attachment List");
-		lblAttachments.setBounds(597, 102, 183, 20);
+		lblAttachments = new JLabel("Attachments:");
+		lblAttachments.setBounds(609, 25, 183, 20);
 		lblAttachments.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAttachments.setForeground(Color.WHITE);
 		lblAttachments.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 20));

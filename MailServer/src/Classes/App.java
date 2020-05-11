@@ -67,7 +67,15 @@ public class App implements IApp{
 				linecounter++;
 			}
 			myreader.close();
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
+			File myobj =new File("D:\\MailServerData");
+			myobj.mkdir();
+			myobj =new File("D:\\MailServerData\\database.txt");
+			try {
+				myobj.createNewFile();
+			} catch (IOException e1) {
+				return false;
+			}
 			return false;
 		}
 		return false;

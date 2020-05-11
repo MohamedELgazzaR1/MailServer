@@ -59,6 +59,7 @@ public class Home extends JFrame {
 	 * Create the frame.
 	 */
 	public Home() {
+		setTitle("CSED2023");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1013, 621);
