@@ -93,7 +93,6 @@ public class Folder implements IFolder {
 				for (String filename : files) {
 					File newfile = new File(src, filename);
 					deleteFolder(newfile);
-					newfile.deleteOnExit();
 					if (src.exists()) {
 						src.delete();
 					}
