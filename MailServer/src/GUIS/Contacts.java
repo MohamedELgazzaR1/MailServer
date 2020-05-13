@@ -139,6 +139,8 @@ public class Contacts extends JFrame {
 			}
 			showcontact.setText("");
 			showmail.setText("");
+			sort.select("Alphabetical Order");
+			searchContact.setText("");
 	}
 	public Contacts() {
 		setTitle("My Contacts");
@@ -347,7 +349,7 @@ public class Contacts extends JFrame {
 								FileWriter wrt = new FileWriter(f, true);
 								wrt.write(extramail+"\n");
 								wrt.close();
-								JOptionPane.showMessageDialog(null,"Email added Successfully !");
+								JOptionPane.showMessageDialog(null,"Email added successfully.");
 								extraEmail.setText(null);
 								
 							} catch (FileNotFoundException e1) {
@@ -357,17 +359,17 @@ public class Contacts extends JFrame {
 							}
 							
 						}else {
-							 JOptionPane.showMessageDialog(null,"Email is Already Exist ! ","Error",JOptionPane.ERROR_MESSAGE);
+							 JOptionPane.showMessageDialog(null,"Email already exists. ","Error",JOptionPane.ERROR_MESSAGE);
 						}	
 					}else {
-						JOptionPane.showMessageDialog(null,"This email does not exist on this mail server !","Error",JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null,"This email does not exist on the mail server.","Error",JOptionPane.ERROR_MESSAGE);
 					}
 					}else {
-						JOptionPane.showMessageDialog(null,"Invalid Email format !","Error",JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null,"Invalid email format.","Error",JOptionPane.ERROR_MESSAGE);
 					}
 				
 			}else {
-				JOptionPane.showMessageDialog(null,"Please Fill Extra Email Field !","Error",JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,"Please fill Extra Email field.","Error",JOptionPane.ERROR_MESSAGE);
 			}
 			
 			}
@@ -436,22 +438,22 @@ public class Contacts extends JFrame {
 							name.setText("");
 							email.setText("");
 				}else {
-					JOptionPane.showMessageDialog(null,"Error Adding Contact","Error",JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,"Error ddding contact","Error",JOptionPane.ERROR_MESSAGE);
 				}
 				}
 				else {
-					JOptionPane.showMessageDialog(null,"This email does not exist on this mail server !","Error",JOptionPane.ERROR_MESSAGE); 	
+					JOptionPane.showMessageDialog(null,"This email does not exist on the mail server.","Error",JOptionPane.ERROR_MESSAGE); 	
 				}
 				}
 				else {
-					 JOptionPane.showMessageDialog(null,"Invalid Email format !","Error",JOptionPane.ERROR_MESSAGE);
+					 JOptionPane.showMessageDialog(null,"Invalid email format.","Error",JOptionPane.ERROR_MESSAGE);
 				}
 			}else {
-				 JOptionPane.showMessageDialog(null,"\".txt\" is probhibted in contact names","Error",JOptionPane.ERROR_MESSAGE);
+				 JOptionPane.showMessageDialog(null,"\".txt\" is probhibted in contact names.","Error",JOptionPane.ERROR_MESSAGE);
 			
 			}}
 			else {
-				 JOptionPane.showMessageDialog(null,"Please Fill Both Username and Email Field !","Error",JOptionPane.ERROR_MESSAGE);
+				 JOptionPane.showMessageDialog(null,"Please fill both Username and Email fields.","Error",JOptionPane.ERROR_MESSAGE);
 			}
 				changeSort.itemStateChanged(null);
 			}

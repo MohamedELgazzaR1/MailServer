@@ -687,7 +687,7 @@ public class MainHub extends JFrame {
 					}
 				}
 				if(!selectedEmails.isEmpty()) {
-					int acceptableMoves = folderSelect.countItems()-1;
+					int acceptableMoves = folderSelect.countItems()-2;
 					String[] folders = new String[acceptableMoves];
 					for (int i = 0, j = 0 ; i < acceptableMoves && j < folderSelect.countItems() ; j++) {
 						String name = (String)folderSelect.getItem(j);
